@@ -1,0 +1,17 @@
+{
+  "name": "Salon-Recommendation",
+  "version": "1.0.0",
+  "description": "",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "shared": "pnpm -F @Salon-Recommendation/shared",
+    "front": "pnpm -F @Salon-Recommendation/front",
+    "back": "pnpm -F @Salon-Recommendation/backend",
+    "preinstall": "pnpm dlx only-allow pnpm"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

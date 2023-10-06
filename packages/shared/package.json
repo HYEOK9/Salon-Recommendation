@@ -1,0 +1,7 @@
+{
+  "name": "@Salon-Recommendation/shared",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  }
+}
