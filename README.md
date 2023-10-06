@@ -13,3 +13,5 @@ based on
 - Selenium
 
 - Image Embedding
+
+[Add chromeDriver on root before run](http://chromedriver.storage.googleapis.com/index.html)
