@@ -26,6 +26,8 @@ const MAX_IMAGE_LENGTH_PER_SALON = Number(
 const SCROLL_TIME = 500;
 const SCROLL_TIMEOUT = Number(process.env.SCROLL_TIMEOUT);
 
+type TImage = { placeName: string; src: string };
+
 export {
   TEST_MODE,
   chromeOptions,
@@ -35,4 +37,5 @@ export {
   MAX_IMAGE_LENGTH_PER_SALON,
   SCROLL_TIME,
   SCROLL_TIMEOUT,
+  TImage,
 };

@@ -1,4 +1,5 @@
 import { Builder, By, until } from "selenium-webdriver";
+import { PythonShell } from "python-shell";
 import {
   TEST_MODE,
   chromeOptions,
@@ -8,7 +9,9 @@ import {
   MAX_IMAGE_LENGTH_PER_SALON,
   SCROLL_TIME,
   SCROLL_TIMEOUT,
+  type TImage,
 } from "./constant";
+import { RunWithSrcArrayPythonShellOption } from "./pythonConfig";
 
 const run = async () => {
   let driver = await new Builder()
@@ -16,7 +19,8 @@ const run = async () => {
     .setChromeOptions(chromeOptions)
     .build();
 
-  let totalImageList: string[] = [];
+  let totalImageList: TImage[] = [];
+  let runningPythonApp = 0;
 
   try {
     // 현재 위치에서 미용실을 검색했을 때 검색 결과
@@ -70,7 +74,7 @@ const run = async () => {
       await driver.wait(until.elementIsVisible(reviewContainer[0]));
 
       // 현재 보고있는 미용실의 리뷰이미지들 담을 배열
-      let imageList: string[] = [];
+      let imageList: TImage[] = [];
 
       // 리뷰 페이지 body height
       let prevHeight: number = await driver.executeScript(script.getScrollY);
@@ -96,7 +100,7 @@ const run = async () => {
 
           let src = await imageElement.getAttribute("src");
 
-          imageList.push(src);
+          imageList.push({ placeName, src });
         }
 
         if (imageList.length >= MAX_IMAGE_LENGTH_PER_SALON) break;
@@ -125,6 +129,21 @@ const run = async () => {
         prevHeight = curHeight;
       }
 
+      // hair segmentation script
+      let pythonShell = new PythonShell(
+        "run-with-src-array.py",
+        RunWithSrcArrayPythonShellOption(false, imageList)
+      );
+
+      runningPythonApp++;
+      pythonShell.on("message", (msg) => console.log(msg));
+      pythonShell.end(() => {
+        runningPythonApp--;
+        if (crawlingFinished && runningPythonApp === 1) {
+          console.timeEnd("running time");
+        }
+      });
+
       console.log(`${placeName}: ${imageList.length}개`);
 
       totalImageList = [...totalImageList, ...imageList];
@@ -141,6 +160,5 @@ const run = async () => {
 };
 
 console.time("running time");
-run().then(() => {
-  console.timeEnd("running time");
-});
+let crawlingFinished = false;
+run().then(() => (crawlingFinished = true));

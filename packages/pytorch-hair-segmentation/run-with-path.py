@@ -33,7 +33,7 @@ if __name__ == "__main__":
         default="./models/pspnet_resnet101_sgd_lr_0.002_epoch_100_test_iou_0.918.pth",
     )
     parser.add_argument(
-        "--img_dir", help="path to image files", type=str, default="./data/Figaro1k"
+        "--img_dir", help="path to image files", type=str, default="./data"
     )
     parser.add_argument(
         "--networks",
