@@ -8,10 +8,12 @@ based on
 
 - Next.js
 
-- Nest.js
-
 - Selenium
 
 - Image Embedding
 
-[Add chromeDriver on root before run](http://chromedriver.storage.googleapis.com/index.html)
+- [hair segmentation](https://github.com/YBIGTA/pytorch-hair-segmentation)
+
+<br/>
+
+❗️ Add [chromeDriver](http://chromedriver.storage.googleapis.com/index.html) before run

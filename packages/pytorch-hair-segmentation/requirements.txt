@@ -1,0 +1,6 @@
+tqdm
+pytorch-ignite==0.1.0
+torchsummary
+torch==1.13.1
+torchvision>=0.11
+opencv-python>=4.8.0

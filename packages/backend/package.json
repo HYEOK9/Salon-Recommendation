@@ -7,7 +7,9 @@
     "build": "npx tsc",
     "start": "npx tsc && node index.js",
     "dev": "env-cmd -f ./env/.dev pnpm start",
-    "prod": "env-cmd -f ./env/.prod pnpm start"
+    "prod": "env-cmd -f ./env/.prod pnpm start",
+    "hairseg-gpu": "python3 ../pytorch-hair-segmentation/main.py --networks pspnet_resnet101 --ckpt_dir ../pytorch-hair-segmentation/models/pspnet_resnet101_sgd_lr_0.002_epoch_100_test_iou_0.918.pth --img_dir ../pytorch-hair-segmentation/data --save_dir ../pytorch-hair-segmentation/result/ --use_gpu True",
+    "hairseg-cpu": "python3 ../pytorch-hair-segmentation/main.py --networks pspnet_resnet101 --ckpt_dir ../pytorch-hair-segmentation/models/pspnet_resnet101_sgd_lr_0.002_epoch_100_test_iou_0.918.pth --img_dir ../pytorch-hair-segmentation/data --save_dir ../pytorch-hair-segmentation/result/ --use_gpu False"
   },
   "keywords": [],
   "author": "",
