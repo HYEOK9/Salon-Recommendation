@@ -11,7 +11,10 @@ import {
   SCROLL_TIMEOUT,
   type TImage,
 } from "./constant";
-import { RunWithSrcArrayPythonShellOption } from "./pythonConfig";
+import {
+  GetBestCosSimPythonShellOption,
+  RunWithSrcArrayPythonShellOption,
+} from "./pythonConfig";
 
 const run = async () => {
   let driver = await new Builder()
@@ -100,7 +103,10 @@ const run = async () => {
 
           let src = await imageElement.getAttribute("src");
 
-          imageList.push({ placeName, src });
+          imageList.push({
+            fileName: `${placeName}-${imageList.length + 1}`,
+            src,
+          });
         }
 
         if (imageList.length >= MAX_IMAGE_LENGTH_PER_SALON) break;
@@ -131,15 +137,23 @@ const run = async () => {
 
       // hair segmentation script
       let pythonShell = new PythonShell(
-        "run-with-src-array.py",
-        RunWithSrcArrayPythonShellOption(false, imageList)
+        // "run-with-src-array.py",
+        // RunWithSrcArrayPythonShellOption(false, imageList)
+        "get_cos_sim.py",
+        GetBestCosSimPythonShellOption(
+          false,
+          "../pytorch-hair-segmentation/data/7.jpeg",
+          imageList
+        )
       );
 
       runningPythonApp++;
       pythonShell.on("message", (msg) => console.log(msg));
+      pythonShell.on("error", (err) => console.error(err));
+
       pythonShell.end(() => {
         runningPythonApp--;
-        if (crawlingFinished && runningPythonApp === 1) {
+        if (crawlingFinished && runningPythonApp === 0) {
           console.timeEnd("running time");
         }
       });

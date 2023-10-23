@@ -4,3 +4,5 @@ torchsummary
 torch==1.13.1
 torchvision>=0.11
 opencv-python>=4.8.0
+img2vec_pytorch
+scikit-learn==1.2.2
