@@ -3,3 +3,5 @@ chromedriver
 *.chromedriver
 .DS_Store
 *.js
+data/
+result/

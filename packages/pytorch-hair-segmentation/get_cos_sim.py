@@ -8,6 +8,7 @@ import requests
 from io import BytesIO
 import json
 from PIL import Image
+import heapq
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -105,27 +106,12 @@ def crop_hair_from_image(image):
     return Image.fromarray(image_n_cropped)
 
 
-def getBestCosSim(img_list, key_img):
-    try:
-        sims = {}
-        key_vec = img2vec.get_vec(key_img)
-        for img_obj in img_list:
-            file_name, img_vec, origin_file = (
-                img_obj["fileName"],
-                img_obj["vec"],
-                img_obj["originFile"],
-            )
+def getCosSim(src_img_vec, key_img_vec):
+    similarity = cosine_similarity(
+        key_img_vec.reshape((1, -1)), src_img_vec.reshape((1, -1))
+    )[0][0]
 
-            similarity = cosine_similarity(
-                key_vec.reshape((1, -1)), img_vec.reshape((1, -1))
-            )[0][0]
-            sims[file_name] = {"vec": similarity, "file": origin_file}
-
-        sorted_sims = sorted(sims.items(), key=lambda x: x[1]["vec"], reverse=True)
-        return sorted_sims[:3]
-
-    except Exception as e:
-        print(e)
+    return similarity
 
 
 if __name__ == "__main__":
@@ -181,13 +167,15 @@ if __name__ == "__main__":
         net = get_network(network).to(device)
         state = torch.load(ckpt_dir, map_location=device)
         net.load_state_dict(state["weight"])
-        key_img = Image.open(key_img_dir).convert("RGB")
-        cropped_key_img = crop_hair_from_image(key_img)
 
         with torch.no_grad():
             length = len(img_src_array)
             place_name = img_src_array[0]["fileName"].split("-")[0]
-            result_image_list = []
+
+            max_heap = []
+            key_img = Image.open(key_img_dir).convert("RGB")
+            cropped_key_img = crop_hair_from_image(key_img)
+            cropped_key_img_vec = img2vec.get_vec(cropped_key_img)
 
             for i, img_obj in enumerate(img_src_array):
                 file_name, img_src = img_obj["fileName"], img_obj["src"]
@@ -196,18 +184,29 @@ if __name__ == "__main__":
                         i + 1, length, place_name
                     )
                 )
-                path = os.path.join(save_dir, f"{file_name}.png")
                 img = src_to_file(img_src)
                 image_n_cropped = crop_hair_from_image(img)
                 vec = img2vec.get_vec(image_n_cropped)
 
-                result_image_list.append(
-                    {"fileName": file_name, "vec": vec, "originFile": img}
-                )
+                obj = {
+                    "fileName": file_name,
+                    "similarity": getCosSim(vec, cropped_key_img_vec),
+                    "src": img_src,
+                }
 
-            best_images = getBestCosSim(result_image_list, cropped_key_img)
-            for fname, obj in best_images:
-                cv2.imwrite(path, np.array(obj["file"]))
+                heapq.heappush(max_heap, (obj["similarity"], obj["fileName"], obj))
+
+                if len(max_heap) > 3:
+                    heapq.heappop(max_heap)
+
+            result = sorted(
+                [obj for (_, _, obj) in max_heap],
+                key=lambda x: x["similarity"],
+                reverse=True,
+            )
+
+            for i in result:
+                print(i)
 
     except Exception as e:
         print(e)

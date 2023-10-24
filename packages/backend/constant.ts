@@ -1,6 +1,13 @@
 import chrome from "selenium-webdriver/chrome";
 
 const TEST_MODE = process.env.CRAWLING_NODE_ENV === "development";
+const IS_GPU = process.env.IS_GPU === "true";
+const MAX_SALON = Number(process.env.MAX_SALON);
+const MAX_IMAGE_LENGTH_PER_SALON = Number(
+  process.env.MAX_IMAGE_LENGTH_PER_SALON
+);
+const SCROLL_TIME = 500;
+const SCROLL_TIMEOUT = Number(process.env.SCROLL_TIMEOUT);
 
 const chromeOptions = new chrome.Options().addArguments(
   "--disable-gpu",
@@ -19,17 +26,9 @@ const script = {
   getScrollY: "return document.body.scrollHeight",
 };
 
-const MAX_SALON = Number(process.env.MAX_SALON);
-const MAX_IMAGE_LENGTH_PER_SALON = Number(
-  process.env.MAX_IMAGE_LENGTH_PER_SALON
-);
-const SCROLL_TIME = 500;
-const SCROLL_TIMEOUT = Number(process.env.SCROLL_TIMEOUT);
-
-type TImage = { fileName: string; src: string };
-
 export {
   TEST_MODE,
+  IS_GPU,
   chromeOptions,
   placeResultUrl,
   script,
@@ -37,5 +36,4 @@ export {
   MAX_IMAGE_LENGTH_PER_SALON,
   SCROLL_TIME,
   SCROLL_TIMEOUT,
-  TImage,
 };

@@ -2,6 +2,7 @@ import { Builder, By, until } from "selenium-webdriver";
 import { PythonShell } from "python-shell";
 import {
   TEST_MODE,
+  IS_GPU,
   chromeOptions,
   placeResultUrl,
   script,
@@ -9,12 +10,12 @@ import {
   MAX_IMAGE_LENGTH_PER_SALON,
   SCROLL_TIME,
   SCROLL_TIMEOUT,
-  type TImage,
 } from "./constant";
-import {
-  GetBestCosSimPythonShellOption,
-  RunWithSrcArrayPythonShellOption,
-} from "./pythonConfig";
+import { TImage, TResult } from "./type";
+import { GetBestCosSimArgs, pythonShellDefaultOptions } from "./pythonConfig";
+import { downloadImgFromUrl, isJSONString } from "./util";
+
+PythonShell.defaultOptions = pythonShellDefaultOptions;
 
 const run = async () => {
   let driver = await new Builder()
@@ -23,6 +24,8 @@ const run = async () => {
     .build();
 
   let totalImageList: TImage[] = [];
+  let pythonShellPromises: Promise<any>[] = [];
+  let preBestReviews: TResult[] = [];
   let runningPythonApp = 0;
 
   try {
@@ -137,26 +140,30 @@ const run = async () => {
 
       // hair segmentation script
       let pythonShell = new PythonShell(
-        // "run-with-src-array.py",
-        // RunWithSrcArrayPythonShellOption(false, imageList)
         "get_cos_sim.py",
-        GetBestCosSimPythonShellOption(
-          false,
-          "../pytorch-hair-segmentation/data/7.jpeg",
-          imageList
-        )
+        GetBestCosSimArgs(IS_GPU, "../../data/4.jpeg", imageList)
       );
 
       runningPythonApp++;
-      pythonShell.on("message", (msg) => console.log(msg));
-      pythonShell.on("error", (err) => console.error(err));
 
-      pythonShell.end(() => {
-        runningPythonApp--;
-        if (crawlingFinished && runningPythonApp === 0) {
-          console.timeEnd("running time");
-        }
+      const pythonShellPromise = new Promise((resolve) => {
+        pythonShell.on("message", (msg) => {
+          const value = isJSONString(msg);
+          value ? preBestReviews.push(value) : console.log(msg);
+        });
+        pythonShell.on("error", (err) => console.error(err));
+
+        pythonShell.end(() => {
+          runningPythonApp--;
+
+          if (crawlingFinished && runningPythonApp === 0) {
+            console.timeEnd("running time");
+          }
+          resolve(1);
+        });
       });
+
+      pythonShellPromises.push(pythonShellPromise);
 
       console.log(`${placeName}: ${imageList.length}개`);
 
@@ -166,6 +173,13 @@ const run = async () => {
     }
 
     console.log(`\ntotal: ${totalImageList.length}개`);
+    await Promise.all(pythonShellPromises);
+
+    const result = preBestReviews
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, 5);
+
+    result.forEach((image) => downloadImgFromUrl(image, "../../result"));
   } catch (e) {
     console.log(e);
   } finally {

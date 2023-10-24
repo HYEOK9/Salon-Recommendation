@@ -1,35 +1,17 @@
-import { TImage } from "./constant";
+import { TImage } from "./type";
+import type { Options } from "python-shell";
 
-export const RunWithSrcPythonShellOption = (
-  GPU: boolean = true,
-  imgObj: TImage
-) => ({
-  mode: "text" as const,
+export const pythonShellDefaultOptions: Options = {
+  mode: "text",
   pythonPath: "python3",
   pythonOptions: ["-u"],
   scriptPath: "../pytorch-hair-segmentation",
-  args: [
-    "--networks",
-    "pspnet_resnet101",
-    "--ckpt_dir",
-    "../pytorch-hair-segmentation/models/pspnet_resnet101_sgd_lr_0.002_epoch_100_test_iou_0.918.pth",
-    "--img_obj",
-    JSON.stringify(imgObj),
-    "--save_dir",
-    "../pytorch-hair-segmentation/result",
-    "--use_gpu",
-    GPU ? "True" : "False",
-  ],
-});
+};
 
-export const RunWithSrcArrayPythonShellOption = (
+export const RunWithSrcArrayArgs = (
   GPU: boolean = true,
   imgArray: TImage[]
 ) => ({
-  mode: "text" as const,
-  pythonPath: "python3",
-  pythonOptions: ["-u"],
-  scriptPath: "../pytorch-hair-segmentation",
   args: [
     "--networks",
     "pspnet_resnet101",
@@ -44,15 +26,11 @@ export const RunWithSrcArrayPythonShellOption = (
   ],
 });
 
-export const GetBestCosSimPythonShellOption = (
+export const GetBestCosSimArgs = (
   GPU: boolean = true,
   keyPicDir = "../pytorch-hair-segmentation/data/0.jpeg",
   imgArray: TImage[]
 ) => ({
-  mode: "text" as const,
-  pythonPath: "python3",
-  pythonOptions: ["-u"],
-  scriptPath: "../pytorch-hair-segmentation",
   args: [
     "--networks",
     "pspnet_resnet101",
@@ -67,28 +45,4 @@ export const GetBestCosSimPythonShellOption = (
     "--use_gpu",
     GPU ? "True" : "False",
   ],
-});
-
-export const RunWithFilePathPythonShellOption = (
-  GPU: boolean = true,
-  filePath: string = "../pytorch-hair-segmentation/data",
-  savePath: string = "../pytorch-hair-segmentation/result"
-) => ({
-  mode: "text" as const,
-  pythonPath: "python3",
-  pythonOptions: ["-u"],
-  scriptPath: "../pytorch-hair-segmentation",
-  args: [
-    "--networks",
-    "pspnet_resnet101",
-    "--ckpt_dir",
-    "../pytorch-hair-segmentation/models/pspnet_resnet101_sgd_lr_0.002_epoch_100_test_iou_0.918.pth",
-    "--img_src_array",
-    filePath,
-    "--save_dir",
-    savePath,
-    "--use_gpu",
-    GPU ? "True" : "False",
-  ],
-  encoding: "utf8",
 });
