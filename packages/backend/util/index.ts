@@ -19,6 +19,5 @@ export const downloadImgFromUrl = async (image: TImage, path: string) => {
   }
   fs.writeFile(`${path}/${image.fileName}.png`, response.data, (err) => {
     if (err) throw err;
-    console.log("Image downloaded successfully!");
   });
 };

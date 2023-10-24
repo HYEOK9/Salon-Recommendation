@@ -1,15 +1,16 @@
 import chrome from "selenium-webdriver/chrome";
 
-const TEST_MODE = process.env.CRAWLING_NODE_ENV === "development";
-const IS_GPU = process.env.IS_GPU === "true";
-const MAX_SALON = Number(process.env.MAX_SALON);
-const MAX_IMAGE_LENGTH_PER_SALON = Number(
+export const TEST_MODE = process.env.CRAWLING_NODE_ENV === "development";
+export const IS_GPU = process.env.IS_GPU === "true";
+export const MAX_SALON = Number(process.env.MAX_SALON);
+export const MAX_IMAGE_LENGTH_PER_SALON = Number(
   process.env.MAX_IMAGE_LENGTH_PER_SALON
 );
-const SCROLL_TIME = 500;
-const SCROLL_TIMEOUT = Number(process.env.SCROLL_TIMEOUT);
+export const SCROLL_TIME = 500;
+export const SCROLL_TIMEOUT = Number(process.env.SCROLL_TIMEOUT);
+export const SHOW_CLIENT = Number(process.env.SHOW_CLIENT);
 
-const chromeOptions = new chrome.Options().addArguments(
+export const chromeOptions = new chrome.Options().addArguments(
   "--disable-gpu",
   "window-size=1920x1080",
   "lang=ko_KR"
@@ -18,22 +19,10 @@ const chromeOptions = new chrome.Options().addArguments(
 if (!TEST_MODE) chromeOptions.addArguments("--headless=new");
 
 // 거리순 정렬하려면 mobile view로 열어야함
-const placeResultUrl =
+export const placeResultUrl =
   "https://m.map.naver.com/search2/search.naver?query=%EB%AF%B8%EC%9A%A9%EC%8B%A4&siteSort=1&sm=clk";
 
-const script = {
+export const script = {
   scrollBottom: "window.scrollTo(0, document.body.scrollHeight)",
   getScrollY: "return document.body.scrollHeight",
-};
-
-export {
-  TEST_MODE,
-  IS_GPU,
-  chromeOptions,
-  placeResultUrl,
-  script,
-  MAX_SALON,
-  MAX_IMAGE_LENGTH_PER_SALON,
-  SCROLL_TIME,
-  SCROLL_TIMEOUT,
 };

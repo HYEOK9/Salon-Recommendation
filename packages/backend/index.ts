@@ -10,6 +10,7 @@ import {
   MAX_IMAGE_LENGTH_PER_SALON,
   SCROLL_TIME,
   SCROLL_TIMEOUT,
+  SHOW_CLIENT,
 } from "./constant";
 import { TImage, TResult } from "./type";
 import { GetBestCosSimArgs, pythonShellDefaultOptions } from "./pythonConfig";
@@ -24,10 +25,9 @@ const run = async () => {
     .setChromeOptions(chromeOptions)
     .build();
 
-  let totalImageList: TImage[] = [];
+  let totalImageList: { placeName: string; images: TImage[] }[] = [];
   let pythonShellPromises: Promise<any>[] = [];
   let preBestReviews: TResult[] = [];
-  let runningPythonApp = 0;
 
   try {
     // 현재 위치에서 미용실을 검색했을 때 검색 결과
@@ -145,8 +145,6 @@ const run = async () => {
         GetBestCosSimArgs(IS_GPU, TEST_FILE, imageList)
       );
 
-      runningPythonApp++;
-
       const pythonShellPromise = new Promise((resolve) => {
         pythonShell.on("message", (msg) => {
           const value = isJSONString(msg);
@@ -154,38 +152,40 @@ const run = async () => {
         });
         pythonShell.on("error", (err) => console.error(err));
 
-        pythonShell.end(() => {
-          runningPythonApp--;
-
-          if (crawlingFinished && runningPythonApp === 0) {
-            console.timeEnd("running time");
-          }
-          resolve(1);
-        });
+        pythonShell.end(() => resolve(1));
       });
 
       pythonShellPromises.push(pythonShellPromise);
 
-      totalImageList = [...totalImageList, ...imageList];
+      totalImageList = [...totalImageList, { placeName, images: imageList }];
 
       await driver.navigate().back();
     }
 
-    console.log(`\ntotal: ${totalImageList.length}개`);
     await Promise.all(pythonShellPromises);
 
     const result = preBestReviews
       .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, 10);
+      .slice(0, SHOW_CLIENT);
 
     result.forEach((image) => downloadImgFromUrl(image, "../../result"));
   } catch (e) {
     console.log(e);
   } finally {
     if (!TEST_MODE) driver.quit();
+    let totalLength = 0;
+    console.log("--------------------------------");
+    totalImageList.forEach(({ placeName, images }) => {
+      const length = images.length;
+      console.log(`${placeName}:${length} 개`);
+      totalLength += length;
+    });
+    console.log(`\nprocessed ${totalLength} images`);
+    console.log(`downloaded ${SHOW_CLIENT} images\n`);
+    console.timeEnd("running time");
+    console.log("--------------------------------");
   }
 };
 
 console.time("running time");
-let crawlingFinished = false;
-run().then(() => (crawlingFinished = true));
+run();
