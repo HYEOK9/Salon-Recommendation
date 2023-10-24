@@ -15,6 +15,7 @@ import { TImage, TResult } from "./type";
 import { GetBestCosSimArgs, pythonShellDefaultOptions } from "./pythonConfig";
 import { downloadImgFromUrl, isJSONString } from "./util";
 
+const TEST_FILE = "../../data/9.jpeg";
 PythonShell.defaultOptions = pythonShellDefaultOptions;
 
 const run = async () => {
@@ -72,7 +73,7 @@ const run = async () => {
 
       // 리뷰 없으면 뒤로가서 다음 미용실 탐색
       if (!reviewContainer.length) {
-        console.log(`${placeName}: 0개`);
+        console.log(`review not exists in ${placeName}`);
         await driver.navigate().back();
         continue;
       }
@@ -141,7 +142,7 @@ const run = async () => {
       // hair segmentation script
       let pythonShell = new PythonShell(
         "get_cos_sim.py",
-        GetBestCosSimArgs(IS_GPU, "../../data/4.jpeg", imageList)
+        GetBestCosSimArgs(IS_GPU, TEST_FILE, imageList)
       );
 
       runningPythonApp++;
@@ -165,8 +166,6 @@ const run = async () => {
 
       pythonShellPromises.push(pythonShellPromise);
 
-      console.log(`${placeName}: ${imageList.length}개`);
-
       totalImageList = [...totalImageList, ...imageList];
 
       await driver.navigate().back();
@@ -177,7 +176,7 @@ const run = async () => {
 
     const result = preBestReviews
       .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, 5);
+      .slice(0, 10);
 
     result.forEach((image) => downloadImgFromUrl(image, "../../result"));
   } catch (e) {

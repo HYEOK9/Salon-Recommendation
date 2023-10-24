@@ -10,35 +10,17 @@ import json
 from PIL import Image
 import heapq
 
+sys.path.append("../img2vec/img2vec_pytorch")
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-
 from networks import get_network
+import torchvision.transforms as std_trnsf
 
 # img2Vec
 from img2vec_pytorch import Img2Vec
 from sklearn.metrics.pairwise import cosine_similarity
 
-import torchvision.transforms as std_trnsf
 
-# from torchvision.models import efficientnet_b4, EfficientNet_B4_Weights
-# from torchvision.models._api import WeightsEnum
-# from torch.hub import load_state_dict_from_url
-
-# img2vecModel = "efficientnet_b4"
-
-
-################### 갑자기 efficientnet_b4모델 사용시 에러 나서 추가
-# def get_state_dict(self, *args, **kwargs):
-#     kwargs.pop("check_hash")
-#     return load_state_dict_from_url(self.url, *args, **kwargs)
-
-
-# WeightsEnum.get_state_dict = get_state_dict
-
-# efficientnet_b4(weights=EfficientNet_B4_Weights.IMAGENET1K_V1)
-# efficientnet_b4(weights="DEFAULT")
-###################
-
+img2VecModel = "efficientnet_b4"
 
 test_image_transforms = std_trnsf.Compose(
     [
@@ -156,7 +138,7 @@ if __name__ == "__main__":
         network = args.networks.lower()
         save_dir = args.save_dir
         device = "cuda" if args.use_gpu else "cpu"
-        img2vec = Img2Vec(cuda=True if args.use_gpu else False)
+        img2vec = Img2Vec(cuda=True if args.use_gpu else False, model=img2VecModel)
 
         assert os.path.exists(ckpt_dir)
         assert os.path.exists(os.path.split(save_dir)[0])
