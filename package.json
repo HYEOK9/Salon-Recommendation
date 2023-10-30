@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "shared": "pnpm -F @Salon-Recommendation/shared",
-    "front": "pnpm -F @Salon-Recommendation/front",
+    "front": "pnpm -F @Salon-Recommendation/frontend",
     "back": "pnpm -F @Salon-Recommendation/backend",
     "preinstall": "pnpm dlx only-allow pnpm"
   },

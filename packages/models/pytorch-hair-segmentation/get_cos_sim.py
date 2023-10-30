@@ -20,7 +20,7 @@ from img2vec_pytorch import Img2Vec
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-img2VecModel = "efficientnet_b4"
+img2VecModel = "efficientnet_b6"
 
 test_image_transforms = std_trnsf.Compose(
     [
@@ -137,7 +137,10 @@ if __name__ == "__main__":
         img_src_array = json.loads(args.img_src_array)
         network = args.networks.lower()
         save_dir = args.save_dir
-        device = "cuda" if args.use_gpu else "cpu"
+        device = (
+            "mps" if torch.backends.mps.is_available() else ("cuda" if False else "cpu")
+        )
+
         img2vec = Img2Vec(cuda=True if args.use_gpu else False, model=img2VecModel)
 
         assert os.path.exists(ckpt_dir)
