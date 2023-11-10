@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, SetStateAction } from "react";
+import { ChangeEvent, Dispatch, DragEvent, SetStateAction } from "react";
 import { enqueueSnackbar } from "notistack";
 
 export type TFile = { file: Blob; url: string };
@@ -23,6 +23,27 @@ export const setSingleFile = (
   if (!target.files) return;
 
   const file = target.files[0];
+
+  if (checkAcceptableExt(file.name, acceptableExt)) {
+    const url = URL.createObjectURL(file);
+    if (fileState) URL.revokeObjectURL(fileState.url);
+    setFileState({ file, url });
+  } else {
+    enqueueSnackbar(`${acceptableExt.join(", ")}파일만 가능합니다!`, {
+      variant: "error",
+    });
+  }
+};
+
+export const setSingleFileByDrag = (
+  event: DragEvent<Element>,
+  fileState: TFile | null,
+  setFileState: Dispatch<SetStateAction<TFile | null>>
+) => {
+  event.preventDefault();
+  if (!event.dataTransfer?.files) return;
+
+  const file = event.dataTransfer.files[0];
 
   if (checkAcceptableExt(file.name, acceptableExt)) {
     const url = URL.createObjectURL(file);

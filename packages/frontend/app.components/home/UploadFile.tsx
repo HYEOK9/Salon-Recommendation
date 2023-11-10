@@ -1,10 +1,15 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, DragEventHandler, useRef, useState } from "react";
 import Image from "next/image";
 // styles
 import { Box, Button, Typography } from "@mui/material";
 import { SxStyle } from "../../style/type";
 import CameraIcon from "public/ic-camera.png";
-import { TFile, deleteSingleFile, setSingleFile } from "../../app.lib";
+import {
+  type TFile,
+  deleteSingleFile,
+  setSingleFile,
+  setSingleFileByDrag,
+} from "../../app.lib";
 import { enqueueSnackbar } from "notistack";
 
 interface UploadFileProps {
@@ -15,20 +20,20 @@ const UploadFile = ({ goNext }: UploadFileProps) => {
   const [fileState, setFileState] = useState<TFile | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const clickUpload = () => inputRef?.current?.click();
-
-  const upLoadFile = (e: ChangeEvent<HTMLInputElement>) =>
-    setSingleFile(e, fileState, setFileState);
-
-  const deleteFile = () => {
-    deleteSingleFile(fileState, setFileState);
-    if (inputRef.current) inputRef.current.value = "";
-  };
-
   return (
     <>
       <Typography sx={styles.title}>헤어 이미지로 미용실 찾기</Typography>
-      <Box sx={styles.imageUploadBox} onClick={clickUpload}>
+      <Box
+        sx={styles.imageUploadBox}
+        onClick={() => inputRef?.current?.click()}
+        onDrop={(e) => {
+          e.preventDefault();
+          setSingleFileByDrag(e, fileState, setFileState);
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+        }}
+      >
         {fileState ? (
           <Image src={fileState.url} alt="preview" fill objectFit="contain" />
         ) : (
@@ -41,7 +46,10 @@ const UploadFile = ({ goNext }: UploadFileProps) => {
       {fileState?.file && (
         <Button
           sx={styles.deleteButton}
-          onClick={deleteFile}
+          onClick={() => {
+            deleteSingleFile(fileState, setFileState);
+            if (inputRef.current) inputRef.current.value = "";
+          }}
           variant="outlined"
           color="error"
         >
@@ -50,7 +58,7 @@ const UploadFile = ({ goNext }: UploadFileProps) => {
       )}
       <input
         ref={inputRef}
-        onChange={upLoadFile}
+        onChange={(e) => setSingleFile(e, fileState, setFileState)}
         type="file"
         accept="image/*"
         hidden
