@@ -19,6 +19,8 @@ const SetLocation = ({ goNext }: SetLocationProps) => {
   const [place, setPlace] = useState("");
   const [useLocation, setUseLocation] = useState(false);
 
+  const canGoNext = place.trim() !== "" || useLocation;
+
   return (
     <>
       <Typography sx={styles.title}>헤어 이미지로 미용실 찾기</Typography>
@@ -46,9 +48,9 @@ const SetLocation = ({ goNext }: SetLocationProps) => {
       />
 
       <Button
-        sx={styles.nextButton(place.trim() !== "" || useLocation)}
+        sx={styles.nextButton(canGoNext)}
         onClick={() => {
-          if (!place && !useLocation) {
+          if (!canGoNext) {
             enqueueSnackbar("위치를 선택해주세요!");
             return;
           }
@@ -66,10 +68,9 @@ export default SetLocation;
 const styles = {
   title: {
     position: "fixed",
-    top: 40,
-    fontSize: "1.5rem",
+    top: 100,
+    fontSize: "1.75rem",
     fontFamily: "Jua",
-    fontWeight: "400",
     color: "var(--color-primary)",
   },
   nextButton: (valid: boolean) => ({
