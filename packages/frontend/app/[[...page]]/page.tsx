@@ -1,10 +1,11 @@
 import { Box } from "@mui/material";
-import HomeSlider from "../../components/HomeSlider";
+import { SxStyle } from "../../style/type";
+import HomePage from "../../app.components/home";
 
 export default function Home() {
   return (
     <Box sx={styles.container}>
-      <HomeSlider />
+      <HomePage />
     </Box>
   );
 }
@@ -17,4 +18,4 @@ const styles = {
     width: "100%",
     height: "100%",
   },
-};
+} satisfies SxStyle;

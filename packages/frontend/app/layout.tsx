@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-// styles
-import { Container, SxProps } from "@mui/material";
 import "../style/reset.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import AppLayout from "../app.layout/Providers";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,22 +16,9 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossoOrigin />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@300&display=swap"
-        rel="stylesheet"
-      />
-      <body className={inter.className}>
-        <Container disableGutters maxWidth="xs" sx={style}>
-          {children}
-        </Container>
+      <body>
+        <AppLayout>{children}</AppLayout>
       </body>
     </html>
   );
 }
-
-const style: SxProps = {
-  height: "100vh",
-  overflow: "hidden",
-};
