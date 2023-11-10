@@ -22,11 +22,11 @@ const HomePage = () => {
     <Box sx={styles.container}>
       <Slider {...sliderSettings} ref={sliderRef}>
         <SlideWrapper>
-          <UploadFile goNext={goNext} />
+          <SetLocation goNext={goNext} />
         </SlideWrapper>
 
         <SlideWrapper>
-          <SetLocation goBack={goBack} />
+          <UploadFile goBack={goBack} />
         </SlideWrapper>
       </Slider>
     </Box>

@@ -1,28 +1,35 @@
-import { ChangeEvent, DragEventHandler, useRef, useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
+import { enqueueSnackbar } from "notistack";
 // styles
 import { Box, Button, Typography } from "@mui/material";
 import { SxStyle } from "../../style/type";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CameraIcon from "public/ic-camera.png";
+// lib
 import {
   type TFile,
   deleteSingleFile,
   setSingleFile,
   setSingleFileByDrag,
 } from "../../app.lib";
-import { enqueueSnackbar } from "notistack";
 
 interface UploadFileProps {
-  goNext?: () => void;
+  goBack?: () => void;
 }
 
-const UploadFile = ({ goNext }: UploadFileProps) => {
+const UploadFile = ({ goBack }: UploadFileProps) => {
   const [fileState, setFileState] = useState<TFile | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <>
-      <Typography sx={styles.title}>헤어 이미지로 미용실 찾기</Typography>
+      <KeyboardBackspaceIcon
+        sx={styles.arrow}
+        fontSize="large"
+        onClick={goBack}
+      />
+
       <Box
         sx={styles.imageUploadBox}
         onClick={() => inputRef?.current?.click()}
@@ -64,16 +71,15 @@ const UploadFile = ({ goNext }: UploadFileProps) => {
         hidden
       />
       <Button
-        sx={styles.nextButton(!!fileState?.file)}
+        sx={styles.submitButton(!!fileState?.file)}
         onClick={() => {
           if (!fileState?.file) {
             enqueueSnackbar("파일을 업로드 해주세요!");
             return;
           }
-          goNext?.();
         }}
       >
-        다음 단계
+        찾기
       </Button>
     </>
   );
@@ -82,14 +88,14 @@ const UploadFile = ({ goNext }: UploadFileProps) => {
 export default UploadFile;
 
 const styles = {
-  title: {
-    position: "fixed",
-    top: 40,
-    fontSize: "1.5rem",
-    fontFamily: "Jua",
-    fontWeight: "400",
-    color: "var(--color-primary)",
+  arrow: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    cursor: "pointer",
+    fill: "var(--color-primary)",
   },
+
   imageUploadBox: {
     display: "flex",
     bgcolor: "#fff",
@@ -107,14 +113,17 @@ const styles = {
     "& p": { color: "var(--color-light-70)", fontSize: " 0.75rem" },
   },
   deleteButton: { mt: "20px" },
-  nextButton: (valid: boolean) => ({
+  submitButton: (valid: boolean) => ({
     position: "absolute",
     bottom: 20,
     width: "320px",
     height: "50px",
-    color: "var(--color-primary)",
-    bgcolor: "#fff",
+    color: valid ? "var(--color-primary)" : "var(--color-light-50)",
+    bgcolor: "var(--color-grayBackground)",
     fontSize: "1.125rem",
-    "&:hover": { color: "var(--color-primary)", bgcolor: "#fff" },
+    "&:hover": {
+      color: valid ? "var(--color-primary)" : "var(--color-light-50)",
+      bgcolor: "var(--color-grayBackground)",
+    },
   }),
 } satisfies SxStyle;

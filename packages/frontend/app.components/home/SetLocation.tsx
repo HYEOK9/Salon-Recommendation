@@ -1,34 +1,34 @@
 import { useState } from "react";
+import { enqueueSnackbar } from "notistack";
 // styles
 import {
-  Box,
   TextField,
   Button,
+  Typography,
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { SxStyle } from "../../style/type";
 
 interface SetLocationProps {
-  goBack?: () => void;
+  goNext?: () => void;
 }
 
-const SetLocation = ({ goBack }: SetLocationProps) => {
+const SetLocation = ({ goNext }: SetLocationProps) => {
+  const [place, setPlace] = useState("");
   const [useLocation, setUseLocation] = useState(false);
 
   return (
     <>
-      <KeyboardBackspaceIcon
-        sx={styles.arrow}
-        fontSize="large"
-        onClick={goBack}
-      />
+      <Typography sx={styles.title}>헤어 이미지로 미용실 찾기</Typography>
+
       <TextField
-        InputProps={{ endAdornment: <SearchIcon /> }}
+        value={place}
+        onChange={({ target: { value } }) => setPlace(value)}
+        InputProps={{ endAdornment: <SearchIcon fontSize="small" /> }}
         autoComplete="off"
-        placeholder="위치를 입력해주세요! ex) 서천동"
+        placeholder="어느 지역에서 찾을까요? ex)서천동"
         disabled={useLocation}
       />
       <FormControlLabel
@@ -36,13 +36,27 @@ const SetLocation = ({ goBack }: SetLocationProps) => {
           <Checkbox
             value={useLocation}
             checked={useLocation}
-            onClick={() => setUseLocation((prev) => !prev)}
+            onClick={() => {
+              setPlace("");
+              setUseLocation((prev) => !prev);
+            }}
           />
         }
         label="현위치로 찾기"
       />
 
-      <Button sx={styles.button}>찾기</Button>
+      <Button
+        sx={styles.nextButton(place.trim() !== "" || useLocation)}
+        onClick={() => {
+          if (!place && !useLocation) {
+            enqueueSnackbar("위치를 선택해주세요!");
+            return;
+          }
+          goNext?.();
+        }}
+      >
+        다음
+      </Button>
     </>
   );
 };
@@ -50,24 +64,25 @@ const SetLocation = ({ goBack }: SetLocationProps) => {
 export default SetLocation;
 
 const styles = {
-  arrow: {
-    position: "absolute",
-    top: 20,
-    left: 20,
-    cursor: "pointer",
-    fill: "var(--color-primary)",
+  title: {
+    position: "fixed",
+    top: 40,
+    fontSize: "1.5rem",
+    fontFamily: "Jua",
+    fontWeight: "400",
+    color: "var(--color-primary)",
   },
-  button: {
+  nextButton: (valid: boolean) => ({
     position: "absolute",
     bottom: 20,
     width: "320px",
     height: "50px",
-    color: "var(--color-primary)",
+    color: valid ? "var(--color-primary)" : "var(--color-light-50)",
     bgcolor: "var(--color-grayBackground)",
     fontSize: "1.125rem",
     "&:hover": {
-      color: "var(--color-primary)",
+      color: valid ? "var(--color-primary)" : "var(--color-light-50)",
       bgcolor: "var(--color-grayBackground)",
     },
-  },
+  }),
 } satisfies SxStyle;

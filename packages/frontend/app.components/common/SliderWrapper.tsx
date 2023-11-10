@@ -26,9 +26,9 @@ const style = {
     "& fieldset": { border: "none" },
     "&.Mui-disabled": { bgcolor: "var(--color-light-50)" },
   },
-
   "& .MuiFormControlLabel-root": {
     marginLeft: "150px",
     "& span": { fontSize: "0.875rem" },
   },
+  "& *": { transition: "all 0.15s ease" },
 };
