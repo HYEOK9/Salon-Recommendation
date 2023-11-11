@@ -42,10 +42,21 @@ const UploadFile = ({ goBack }: UploadFileProps) => {
         }}
       >
         {fileState ? (
-          <Image src={fileState.url} alt="preview" fill objectFit="contain" />
+          <Image
+            src={fileState.url}
+            alt="preview"
+            fill
+            objectFit="contain"
+            priority
+          />
         ) : (
           <>
-            <Image className="camera-icon" src={CameraIcon} alt="camera-icon" />
+            <Image
+              className="camera-icon"
+              src={CameraIcon}
+              alt="camera-icon"
+              priority
+            />
             <Typography>원하는 헤어 이미지를 끌어놓으세요!</Typography>
           </>
         )}
@@ -77,6 +88,7 @@ const UploadFile = ({ goBack }: UploadFileProps) => {
             enqueueSnackbar("파일을 업로드 해주세요!");
             return;
           }
+          enqueueSnackbar("개발중", { variant: "warning" });
         }}
       >
         찾기
@@ -124,6 +136,9 @@ const styles = {
     "&:hover": {
       color: valid ? "var(--color-primary)" : "var(--color-light-50)",
       bgcolor: "var(--color-grayBackground)",
+    },
+    "&:active": {
+      transform: "translateY(2px)",
     },
   }),
 } satisfies SxStyle;

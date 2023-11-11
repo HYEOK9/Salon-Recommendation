@@ -6,3 +6,4 @@ chromedriver
 data/
 result/
 *.pth
+.env.front
