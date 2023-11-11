@@ -1,7 +1,7 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "../style/reset.css";
-import AppLayout from "../app.layout/Providers";
+import "@/style/reset.css";
+import AppLayout from "@/app.layout/Providers";
 
 // export const metadata: Metadata = {
 //   title: "Create Next App",

@@ -4,11 +4,11 @@ import Slider from "react-slick";
 // styles
 import { Box } from "@mui/material";
 import Background from "public/wave-haikei.svg";
-import { SxStyle } from "../../style/type";
+import { SxStyle } from "@/style/type";
 // constants
-import { sliderSettings } from "../../app.constant/config";
+import { sliderSettings } from "@/app.constant/config";
 // components
-import SlideWrapper from "../common/SliderWrapper";
+import SlideWrapper from "@/app.components/common/SliderWrapper";
 import UploadFile from "./UploadFile";
 import SetLocation from "./SetLocation";
 

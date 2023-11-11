@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
-import { SxStyle } from "../../style/type";
-import HomePage from "../../app.components/home";
+import { SxStyle } from "@/style/type";
+import HomePage from "@/app.components/home";
 
 export default function Home() {
   return (

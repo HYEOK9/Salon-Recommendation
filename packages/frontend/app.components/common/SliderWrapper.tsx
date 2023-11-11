@@ -21,14 +21,16 @@ const style = {
   "& .MuiInputBase-root": {
     width: "300px",
     bgcolor: "#fff",
-    border: "1px solid var(--color-primary)",
     borderRadius: "10px",
+    boxShadow: 2,
     "& fieldset": { border: "none" },
-    "&.Mui-disabled": { bgcolor: "var(--color-light-50)" },
+    "&.Mui-disabled": {
+      bgcolor: "var(--color-light-40)",
+    },
   },
   "& .MuiFormControlLabel-root": {
-    marginLeft: "150px",
-    "& span": { fontSize: "0.875rem" },
+    marginLeft: "200px",
+    "& span": { color: "var(--color-primary)", fontSize: "0.875rem" },
   },
   "& *": { transition: "all 0.15s ease" },
 };

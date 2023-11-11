@@ -11,12 +11,12 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import { SxStyle } from "../../style/type";
+import { SxStyle } from "@/style/type";
 // api
-import { kakaoAxios } from "../../app.lib";
-import { GET_KAKAO_ADDRESS } from "../../app.endpoint/kakao";
+import { kakaoAxios } from "@/lib";
+import { GET_KAKAO_ADDRESS } from "@/app.endpoint/kakao";
 // components
-import KakaoResultBox from "./KakaoResultBox";
+import KakaoResultBox from "@/app.components/common/KakaoResultBox";
 
 interface SetLocationProps {
   goNext?: () => void;
@@ -84,7 +84,11 @@ const SetLocation = ({ goNext }: SetLocationProps) => {
           disabled={useLocation}
         />
         {text && (
-          <KakaoResultBox result={responseArray} selectPlace={selectPlace} />
+          <KakaoResultBox
+            result={responseArray}
+            selectPlace={selectPlace}
+            top={60}
+          />
         )}
       </Box>
 
@@ -96,7 +100,7 @@ const SetLocation = ({ goNext }: SetLocationProps) => {
             onClick={useCurLocation}
           />
         }
-        label="현위치로 찾기"
+        label="현위치 사용"
       />
 
       <Button
@@ -129,7 +133,7 @@ const styles = {
     cursor: "pointer",
     fill: "var(--color-light-70)",
     "&:active": {
-      transform: "translateY(2px)",
+      transform: "translateY(1px)",
     },
   },
   nextButton: (valid: boolean) => ({
@@ -137,15 +141,15 @@ const styles = {
     bottom: 20,
     width: "320px",
     height: "50px",
-    color: valid ? "var(--color-primary)" : "var(--color-light-50)",
-    bgcolor: "var(--color-grayBackground)",
+    color: valid ? "var(--color-textPrimary)" : "var(--color-light-40)",
+    bgcolor: valid ? "var(--color-grayBackground)" : "var(--color-light-50)",
     fontSize: "1.125rem",
     "&:hover": {
-      color: valid ? "var(--color-primary)" : "var(--color-light-50)",
-      bgcolor: "var(--color-grayBackground)",
+      color: valid ? "var(--color-textPrimary)" : "var(--color-light-40)",
+      bgcolor: valid ? "var(--color-grayBackground)" : "var(--color-light-50)",
     },
     "&:active": {
-      transform: "translateY(2px)",
+      transform: "translateY(1px)",
     },
   }),
 } satisfies SxStyle;

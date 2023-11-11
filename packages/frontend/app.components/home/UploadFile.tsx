@@ -3,7 +3,7 @@ import Image from "next/image";
 import { enqueueSnackbar } from "notistack";
 // styles
 import { Box, Button, Typography } from "@mui/material";
-import { SxStyle } from "../../style/type";
+import { SxStyle } from "@/style/type";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CameraIcon from "public/ic-camera.png";
 // lib
@@ -12,7 +12,7 @@ import {
   deleteSingleFile,
   setSingleFile,
   setSingleFileByDrag,
-} from "../../app.lib";
+} from "@/lib";
 
 interface UploadFileProps {
   goBack?: () => void;
@@ -117,10 +117,9 @@ const styles = {
     width: "200px",
     height: "200px",
     position: "relative",
-    border: "1.5px solid var(--color-line-400)",
+    boxShadow: 2,
     borderRadius: "8px",
     cursor: "pointer",
-    "& .preview": {},
     "& .camera-icon": { width: 50, height: 50, marginBottom: "20px" },
     "& p": { color: "var(--color-light-70)", fontSize: " 0.75rem" },
   },
@@ -130,12 +129,12 @@ const styles = {
     bottom: 20,
     width: "320px",
     height: "50px",
-    color: valid ? "var(--color-primary)" : "var(--color-light-50)",
-    bgcolor: "var(--color-grayBackground)",
+    color: valid ? "var(--color-textPrimary)" : "var(--color-light-40)",
+    bgcolor: valid ? "var(--color-grayBackground)" : "var(--color-light-50)",
     fontSize: "1.125rem",
     "&:hover": {
-      color: valid ? "var(--color-primary)" : "var(--color-light-50)",
-      bgcolor: "var(--color-grayBackground)",
+      color: valid ? "var(--color-textPrimary)" : "var(--color-light-40)",
+      bgcolor: valid ? "var(--color-grayBackground)" : "var(--color-light-50)",
     },
     "&:active": {
       transform: "translateY(2px)",

@@ -1,4 +1,4 @@
-import { queryWrapper } from "../app.lib";
+import { queryWrapper } from "@/lib";
 
 type TKakaoAddressSearchQuery = {
   query: string;
