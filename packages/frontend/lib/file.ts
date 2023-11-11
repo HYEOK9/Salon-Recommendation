@@ -13,37 +13,21 @@ const checkAcceptableExt = (fileName: string, acceptableArr: string[]) => {
 };
 
 export const setSingleFile = (
-  event: ChangeEvent<HTMLInputElement>,
+  event: ChangeEvent<HTMLInputElement> | DragEvent<Element>,
   fileState: TFile | null,
   setFileState: Dispatch<SetStateAction<TFile | null>>
 ) => {
   event.preventDefault();
-  const { target } = event;
 
-  if (!target.files) return;
+  let file: File | undefined;
 
-  const file = target.files[0];
-
-  if (checkAcceptableExt(file.name, acceptableExt)) {
-    const url = URL.createObjectURL(file);
-    if (fileState) URL.revokeObjectURL(fileState.url);
-    setFileState({ file, url });
+  if ("dataTransfer" in event) {
+    file = event.dataTransfer.files[0];
   } else {
-    enqueueSnackbar(`${acceptableExt.join(", ")}파일만 가능합니다!`, {
-      variant: "error",
-    });
+    file = event.target.files?.[0];
   }
-};
 
-export const setSingleFileByDrag = (
-  event: DragEvent<Element>,
-  fileState: TFile | null,
-  setFileState: Dispatch<SetStateAction<TFile | null>>
-) => {
-  event.preventDefault();
-  if (!event.dataTransfer?.files) return;
-
-  const file = event.dataTransfer.files[0];
+  if (!file) return;
 
   if (checkAcceptableExt(file.name, acceptableExt)) {
     const url = URL.createObjectURL(file);

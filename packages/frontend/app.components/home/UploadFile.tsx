@@ -7,12 +7,7 @@ import { SxStyle } from "@/style/type";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CameraIcon from "public/ic-camera.png";
 // lib
-import {
-  type TFile,
-  deleteSingleFile,
-  setSingleFile,
-  setSingleFileByDrag,
-} from "@/lib";
+import { type TFile, deleteSingleFile, setSingleFile } from "@/lib";
 
 interface UploadFileProps {
   goBack?: () => void;
@@ -35,7 +30,7 @@ const UploadFile = ({ goBack }: UploadFileProps) => {
         onClick={() => inputRef?.current?.click()}
         onDrop={(e) => {
           e.preventDefault();
-          setSingleFileByDrag(e, fileState, setFileState);
+          setSingleFile(e, fileState, setFileState);
         }}
         onDragOver={(e) => {
           e.preventDefault();

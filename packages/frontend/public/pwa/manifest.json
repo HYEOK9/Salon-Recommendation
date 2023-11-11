@@ -1,0 +1,28 @@
+{
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "name": "HairRecommendation",
+  "short_name": "미용실찾기",
+  "description": "\uc774\ubbf8\uc9c0\ub85c \ubbf8\uc6a9\uc2e4 \ucc3e\uae30",
+  "icons": [
+    {
+      "src": "icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
