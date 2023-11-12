@@ -1,5 +1,8 @@
 import { Builder, By, until } from "selenium-webdriver";
 import { PythonShell } from "python-shell";
+import type { Socket } from "socket.io";
+import type { TImage, TResult } from "./type";
+import { downloadImgFromUrl, isJSONString } from "./util";
 import {
   TEST_MODE,
   IS_GPU,
@@ -12,22 +15,16 @@ import {
   SCROLL_TIMEOUT,
   SHOW_CLIENT,
 } from "./constant";
-import { TImage, TResult } from "./type";
 import { GetBestCosSimArgs, pythonShellDefaultOptions } from "./pythonConfig";
-import {
-  downloadImgFromUrl,
-  isJSONString,
-  createConnectionSSE,
-  writeMessageSSE,
-  endConnectionSSE,
-} from "./util";
-import { Response } from "express";
 
 const TEST_FILE = "../../data/9.jpeg";
 PythonShell.defaultOptions = pythonShellDefaultOptions;
 
-export const run = async (place: string, res: Response) => {
-  createConnectionSSE(res);
+export const run = async (place: string, file: any, socket: Socket) => {
+  const sendMessage = (msg: string) => {
+    console.log(msg);
+    socket.emit("message", msg);
+  };
 
   let driver = await new Builder()
     .forBrowser("chrome")
@@ -47,8 +44,7 @@ export const run = async (place: string, res: Response) => {
       await driver.findElement(By.id("_myLocation")).click();
       let currentUrl = await driver.getCurrentUrl();
 
-      // console.log("\n위치 가져오는 중...");
-      writeMessageSSE(res, "위치 가져오는 중...");
+      sendMessage("위치 가져오는 중...");
       while (currentUrl === (await driver.getCurrentUrl())) {}
 
       // 현 위치
@@ -56,12 +52,10 @@ export const run = async (place: string, res: Response) => {
 
       await driver.wait(until.elementIsVisible(locTextElement)).catch(() => {});
 
-      // console.log(`${await locTextElement.getText()}\n`);
-      writeMessageSSE(res, `${await locTextElement.getText()}\n`);
+      sendMessage(`${await locTextElement.getText()}\n`);
     }
 
-    writeMessageSSE(
-      res,
+    sendMessage(
       `근처${MAX_SALON}개 샵에서 최대 ${MAX_IMAGE_LENGTH_PER_SALON}개의 리뷰를 비교합니다`
     );
 
@@ -132,7 +126,7 @@ export const run = async (place: string, res: Response) => {
 
         if (imageList.length >= MAX_IMAGE_LENGTH_PER_SALON) break;
 
-        // // 최초 30개씩 보여주므로 30개 아래면 스크롤할 필요 없음
+        // 최초 30개씩 보여주므로 30개 아래면 스크롤할 필요 없음
         if (reviewImages.length < 30) break;
 
         let curHeight = prevHeight;
@@ -165,7 +159,7 @@ export const run = async (place: string, res: Response) => {
       const pythonShellPromise = new Promise((resolve) => {
         pythonShell.on("message", (msg) => {
           const value = isJSONString(msg);
-          value ? preBestReviews.push(value) : writeMessageSSE(res, msg);
+          value ? preBestReviews.push(value) : sendMessage(msg);
         });
         pythonShell.on("error", (err) => console.error(err));
 
@@ -191,7 +185,7 @@ export const run = async (place: string, res: Response) => {
     console.log(e);
   } finally {
     if (!TEST_MODE) driver.quit();
-    endConnectionSSE(res, totalImageList);
+    socket.emit("data", totalImageList);
     let totalLength = 0;
     console.log("--------------------------------");
     totalImageList.forEach(({ placeName, images }) => {

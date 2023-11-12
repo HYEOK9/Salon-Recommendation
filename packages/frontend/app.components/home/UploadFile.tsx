@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import io, { Socket } from "socket.io-client";
 import { enqueueSnackbar } from "notistack";
 // styles
 import { Box, Button, Typography } from "@mui/material";
@@ -8,7 +9,6 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CameraIcon from "public/ic-camera.png";
 // lib
 import { type TFile, deleteSingleFile, setSingleFile } from "@/lib";
-import { GET_RESULT, GetResultResponse } from "@/app.endpoint";
 // components
 import ModalWithProgress from "../common/ModalWithProgress";
 
@@ -19,10 +19,10 @@ interface UploadFileProps {
 
 const UploadFile = ({ goBack, place }: UploadFileProps) => {
   const [fileState, setFileState] = useState<TFile | null>(null);
+
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [startApi, setStartApi] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-
-  const SSE = useRef<EventSource>();
 
   const [apiState, setApiState] = useState({
     data: null,
@@ -32,52 +32,49 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const unSubscribe = () => {
-    SSE.current?.close();
+  const finishApi = () => {
     setOpenModal(false);
     setStartApi(false);
   };
 
   useEffect(() => {
-    if (!startApi) return;
+    const newSocket = io(process.env.NEXT_PUBLIC_API_BASE_URL as string, {
+      transports: ["websocket"],
+      withCredentials: true,
+    });
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!socket || !startApi || !fileState) return;
 
     try {
-      SSE.current = new EventSource(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}${GET_RESULT(
-          place || "curLocation"
-        )}`,
-        {
-          withCredentials: true,
-        }
-      );
-
-      if (!SSE.current) return;
-
       setOpenModal(true);
 
-      SSE.current.onmessage = async (event) => {
-        const res = JSON.parse(await event.data) as GetResultResponse;
-        setApiState({
-          data: res.data,
-          message: res.message,
-          status: res.status,
-        });
-      };
+      socket.emit("place", place || "curLocation");
+      socket.emit("file", fileState.file);
+      socket.emit("start");
 
-      SSE.current.onerror = async (event) => {
-        console.log(event);
-        SSE.current?.close();
-        setStartApi(false);
-        setOpenModal(false);
-      };
+      socket.on("message", (message) => {
+        setApiState((prev) => ({ ...prev, message }));
+      });
+      socket.on("data", (data) => {
+        setApiState((prev) => ({ ...prev, data }));
+      });
+      socket.on("finish", () => {
+        finishApi();
+        setApiState((prev) => ({ ...prev, message: "" }));
+      });
     } catch (e) {
       console.log(e);
       setStartApi(false);
       setOpenModal(false);
     }
-
-    return () => SSE.current?.close();
-  }, [place, startApi]);
+  }, [place, fileState, startApi, socket]);
 
   return (
     <>
@@ -154,7 +151,7 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
       <ModalWithProgress
         open={openModal}
         setOpen={setOpenModal}
-        onClose={unSubscribe}
+        onClose={finishApi}
         text={apiState.message}
       />
     </>

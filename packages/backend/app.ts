@@ -1,31 +1,36 @@
 import express from "express";
 import cors from "cors";
+import http from "http";
+import socketIO from "socket.io";
 import { run } from "./main";
 
 const PORT = 3001;
+const corsOption = { origin: process.env.CLIENT_BASE_URL, credentials: true };
 
-const app = express();
+const app = express().use(cors(corsOption));
+const server = http.createServer(app);
 
-app.use(
-  cors({
-    origin: process.env.API_BASE_URL,
-    credentials: true,
-  })
-);
+const io = new socketIO.Server(server, { cors: corsOption });
 
-app.get("/api/result/:place", async (req, res) => {
-  res.writeHead(200, {
-    "Content-Type": "text/event-stream",
-    Connection: "keep-alive",
-    charset: "UTF-8",
-    "Transfer-Encoding": "chunked",
-    "X-Accel-Buffering": "no",
-  });
+io.on("connection", (socket) => {
+  let place = "";
+  let file: any;
+  try {
+    socket.on("place", (data: string) => (place = data));
 
-  await run(req.params.place, res);
-  res.send("finish");
+    socket.on("file", (data: Blob) => (file = data));
+
+    socket.on("start", async () => {
+      if (place === "" || !file) throw new Error("file or place doesn't exist");
+
+      await run(place, file, socket);
+      socket.emit("finish");
+    });
+  } catch (e) {
+    console.log(e);
+  }
 });
 
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`🚀 Listening on port ${PORT}...`);
 });
