@@ -19,8 +19,12 @@ export const chromeOptions = new chrome.Options().addArguments(
 if (!TEST_MODE) chromeOptions.addArguments("--headless=new");
 
 // 거리순 정렬하려면 mobile view로 열어야함
-export const placeResultUrl =
-  "https://m.map.naver.com/search2/search.naver?query=%EB%AF%B8%EC%9A%A9%EC%8B%A4&siteSort=1&sm=clk";
+export const placeResultUrl = (place?: string) =>
+  place
+    ? `https://m.map.naver.com/search2/search.naver?query=${place}%20%EB%AF%B8%EC%9A%A9%EC%8B%A4&siteSort=1&sm=clk`
+    : `https://m.map.naver.com/search2/search.naver?query=${encodeURIComponent(
+        "미용실"
+      )}&siteSort=1&sm=clk`;
 
 export const script = {
   scrollBottom: "window.scrollTo(0, document.body.scrollHeight)",

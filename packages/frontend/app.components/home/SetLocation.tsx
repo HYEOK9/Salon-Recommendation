@@ -14,18 +14,20 @@ import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { SxStyle } from "@/style/type";
 // api
 import { kakaoAxios } from "@/lib";
-import { GET_KAKAO_ADDRESS } from "@/app.endpoint/kakao";
+import { GET_KAKAO_ADDRESS } from "@/app.endpoint";
 // components
 import KakaoResultBox from "@/app.components/common/KakaoResultBox";
+import Logo from "@/app.components/common/Logo";
 
 interface SetLocationProps {
   goNext?: () => void;
+  place: string;
+  setPlace: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const SetLocation = ({ goNext }: SetLocationProps) => {
+const SetLocation = ({ goNext, place, setPlace }: SetLocationProps) => {
   const [text, setText] = useState("");
   const [responseArray, setResponseArray] = useState([]);
-  const [place, setPlace] = useState("");
   const [useLocation, setUseLocation] = useState(false);
 
   const canGoNext = place !== "" || useLocation;
@@ -61,10 +63,11 @@ const SetLocation = ({ goNext }: SetLocationProps) => {
 
   useEffect(() => {
     if (place && text) setPlace("");
-  }, [place, text]);
+  }, [text, place, setPlace]);
 
   return (
     <>
+      <Logo fixed top={20} left={380} />
       <Typography sx={styles.title}>헤어 이미지로 미용실 찾기</Typography>
 
       <Box position="relative">
@@ -124,7 +127,7 @@ export default SetLocation;
 const styles = {
   title: {
     position: "fixed",
-    top: 100,
+    top: 180,
     fontSize: "1.75rem",
     fontFamily: "Jua",
     color: "var(--color-primary)",
@@ -138,12 +141,13 @@ const styles = {
   },
   nextButton: (valid: boolean) => ({
     position: "absolute",
-    bottom: 20,
+    bottom: 80,
     width: "320px",
     height: "50px",
     color: valid ? "var(--color-textPrimary)" : "var(--color-light-40)",
     bgcolor: valid ? "var(--color-grayBackground)" : "var(--color-light-50)",
     fontSize: "1.125rem",
+    fontWeight: 600,
     "&:hover": {
       color: valid ? "var(--color-textPrimary)" : "var(--color-light-40)",
       bgcolor: valid ? "var(--color-grayBackground)" : "var(--color-light-50)",

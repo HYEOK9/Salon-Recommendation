@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { enqueueSnackbar } from "notistack";
 // styles
@@ -8,14 +8,76 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CameraIcon from "public/ic-camera.png";
 // lib
 import { type TFile, deleteSingleFile, setSingleFile } from "@/lib";
+import { GET_RESULT, GetResultResponse } from "@/app.endpoint";
+// components
+import ModalWithProgress from "../common/ModalWithProgress";
 
 interface UploadFileProps {
   goBack?: () => void;
+  place: string;
 }
 
-const UploadFile = ({ goBack }: UploadFileProps) => {
+const UploadFile = ({ goBack, place }: UploadFileProps) => {
   const [fileState, setFileState] = useState<TFile | null>(null);
+  const [startApi, setStartApi] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+  const SSE = useRef<EventSource>();
+
+  const [apiState, setApiState] = useState({
+    data: null,
+    message: "",
+    status: 200,
+  });
+
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const unSubscribe = () => {
+    SSE.current?.close();
+    setOpenModal(false);
+    setStartApi(false);
+  };
+
+  useEffect(() => {
+    if (!startApi) return;
+
+    try {
+      SSE.current = new EventSource(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}${GET_RESULT(
+          place || "curLocation"
+        )}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (!SSE.current) return;
+
+      setOpenModal(true);
+
+      SSE.current.onmessage = async (event) => {
+        const res = JSON.parse(await event.data) as GetResultResponse;
+        setApiState({
+          data: res.data,
+          message: res.message,
+          status: res.status,
+        });
+      };
+
+      SSE.current.onerror = async (event) => {
+        console.log(event);
+        SSE.current?.close();
+        setStartApi(false);
+        setOpenModal(false);
+      };
+    } catch (e) {
+      console.log(e);
+      setStartApi(false);
+      setOpenModal(false);
+    }
+
+    return () => SSE.current?.close();
+  }, [place, startApi]);
 
   return (
     <>
@@ -83,11 +145,18 @@ const UploadFile = ({ goBack }: UploadFileProps) => {
             enqueueSnackbar("파일을 업로드 해주세요!");
             return;
           }
-          enqueueSnackbar("개발중", { variant: "warning" });
+          enqueueSnackbar("backend is not deployed", { variant: "warning" });
+          setStartApi(true);
         }}
       >
         찾기
       </Button>
+      <ModalWithProgress
+        open={openModal}
+        setOpen={setOpenModal}
+        onClose={unSubscribe}
+        text={apiState.message}
+      />
     </>
   );
 };
@@ -112,7 +181,7 @@ const styles = {
     width: "200px",
     height: "200px",
     position: "relative",
-    boxShadow: 2,
+    boxShadow: 3,
     borderRadius: "8px",
     cursor: "pointer",
     "& .camera-icon": { width: 50, height: 50, marginBottom: "20px" },
@@ -121,12 +190,13 @@ const styles = {
   deleteButton: { mt: "20px" },
   submitButton: (valid: boolean) => ({
     position: "absolute",
-    bottom: 20,
+    bottom: 80,
     width: "320px",
     height: "50px",
     color: valid ? "var(--color-textPrimary)" : "var(--color-light-40)",
     bgcolor: valid ? "var(--color-grayBackground)" : "var(--color-light-50)",
     fontSize: "1.125rem",
+    fontWeight: 600,
     "&:hover": {
       color: valid ? "var(--color-textPrimary)" : "var(--color-light-40)",
       bgcolor: valid ? "var(--color-grayBackground)" : "var(--color-light-50)",

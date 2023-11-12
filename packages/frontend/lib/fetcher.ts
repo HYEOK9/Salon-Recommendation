@@ -1,4 +1,4 @@
-import axios, {
+import Axios, {
   AxiosError,
   AxiosInstance,
   AxiosRequestConfig,
@@ -6,7 +6,7 @@ import axios, {
 } from "axios";
 
 const errorInterceptor = (error: AxiosError | Error) => {
-  if (axios.isAxiosError(error)) {
+  if (Axios.isAxiosError(error)) {
     const { message, config, response } = error;
     const { method, url } = config as AxiosRequestConfig;
     const { status, statusText } = response as AxiosResponse;
@@ -31,5 +31,11 @@ const kakaoConfig: AxiosRequestConfig = {
   baseURL: "https://dapi.kakao.com",
 };
 
-export const kakaoAxios = setInterceptor(axios.create(kakaoConfig));
+const axiosConfig: AxiosRequestConfig = {
+  baseURL: "http://localhost:3001",
+};
+
+export const kakaoAxios = setInterceptor(Axios.create(kakaoConfig));
+export const axios = setInterceptor(Axios.create(axiosConfig));
+
 kakaoAxios.defaults.headers.Authorization = `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_KEY}`;

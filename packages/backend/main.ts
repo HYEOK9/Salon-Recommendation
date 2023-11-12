@@ -14,12 +14,21 @@ import {
 } from "./constant";
 import { TImage, TResult } from "./type";
 import { GetBestCosSimArgs, pythonShellDefaultOptions } from "./pythonConfig";
-import { downloadImgFromUrl, isJSONString } from "./util";
+import {
+  downloadImgFromUrl,
+  isJSONString,
+  createConnectionSSE,
+  writeMessageSSE,
+  endConnectionSSE,
+} from "./util";
+import { Response } from "express";
 
 const TEST_FILE = "../../data/9.jpeg";
 PythonShell.defaultOptions = pythonShellDefaultOptions;
 
-const run = async () => {
+export const run = async (place: string, res: Response) => {
+  createConnectionSSE(res);
+
   let driver = await new Builder()
     .forBrowser("chrome")
     .setChromeOptions(chromeOptions)
@@ -29,24 +38,32 @@ const run = async () => {
   let pythonShellPromises: Promise<any>[] = [];
   let preBestReviews: TResult[] = [];
 
+  const isCurLocation = place === "curLocation";
   try {
-    // 현재 위치에서 미용실을 검색했을 때 검색 결과
-    await driver.get(placeResultUrl);
+    await driver.get(placeResultUrl(isCurLocation ? "" : place));
 
-    await driver.findElement(By.id("_myLocation")).click();
+    // 현 위치 검색일 경우
+    if (isCurLocation) {
+      await driver.findElement(By.id("_myLocation")).click();
+      let currentUrl = await driver.getCurrentUrl();
 
-    let currentUrl = await driver.getCurrentUrl();
+      // console.log("\n위치 가져오는 중...");
+      writeMessageSSE(res, "위치 가져오는 중...");
+      while (currentUrl === (await driver.getCurrentUrl())) {}
 
-    console.log("\n위치 가져오는 중...");
+      // 현 위치
+      let locTextElement = await driver.findElement(By.css("._resultQuery p"));
 
-    while (currentUrl === (await driver.getCurrentUrl())) {}
+      await driver.wait(until.elementIsVisible(locTextElement)).catch(() => {});
 
-    // 현 위치
-    let locTextElement = await driver.findElement(By.css("._resultQuery p"));
+      // console.log(`${await locTextElement.getText()}\n`);
+      writeMessageSSE(res, `${await locTextElement.getText()}\n`);
+    }
 
-    await driver.wait(until.elementIsVisible(locTextElement)).catch(() => {});
-
-    console.log(`${await locTextElement.getText()}\n`);
+    writeMessageSSE(
+      res,
+      `근처${MAX_SALON}개 샵에서 최대 ${MAX_IMAGE_LENGTH_PER_SALON}개의 리뷰를 비교합니다`
+    );
 
     // 미용실 이름들
     let resultElements = await driver.findElements(
@@ -73,7 +90,7 @@ const run = async () => {
 
       // 리뷰 없으면 뒤로가서 다음 미용실 탐색
       if (!reviewContainer.length) {
-        console.log(`review not exists in ${placeName}`);
+        console.log(`[  0/  0] ${placeName} 리뷰 비교중...`);
         await driver.navigate().back();
         continue;
       }
@@ -148,7 +165,7 @@ const run = async () => {
       const pythonShellPromise = new Promise((resolve) => {
         pythonShell.on("message", (msg) => {
           const value = isJSONString(msg);
-          value ? preBestReviews.push(value) : console.log(msg);
+          value ? preBestReviews.push(value) : writeMessageSSE(res, msg);
         });
         pythonShell.on("error", (err) => console.error(err));
 
@@ -169,10 +186,12 @@ const run = async () => {
       .slice(0, SHOW_CLIENT);
 
     result.forEach((image) => downloadImgFromUrl(image, "../../result"));
+    return result;
   } catch (e) {
     console.log(e);
   } finally {
     if (!TEST_MODE) driver.quit();
+    endConnectionSSE(res, totalImageList);
     let totalLength = 0;
     console.log("--------------------------------");
     totalImageList.forEach(({ placeName, images }) => {
@@ -188,4 +207,3 @@ const run = async () => {
 };
 
 console.time("running time");
-run();

@@ -164,11 +164,7 @@ if __name__ == "__main__":
 
             for i, img_obj in enumerate(img_src_array):
                 file_name, img_src = img_obj["fileName"], img_obj["src"]
-                print(
-                    "[{:3d}/{:3d}] processing image from {}... ".format(
-                        i + 1, length, place_name
-                    )
-                )
+                print("[{:3d}/{:3d}] {}의 이미지 비교중... ".format(i + 1, length, place_name))
                 img = src_to_file(img_src)
                 image_n_cropped = crop_hair_from_image(img)
                 vec = img2vec.get_vec(image_n_cropped)
