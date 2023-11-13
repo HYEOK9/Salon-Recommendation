@@ -9,12 +9,12 @@ import { SxStyle } from "@/style/type";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CameraIcon from "public/ic-camera.png";
 // store
-import { resultAtom } from "@/app.store/resultAtom";
+import { useSetRecoilState } from "recoil";
+import { type TResult, resultAtom } from "@/app.store/resultAtom";
 // lib
 import { type TFile, deleteSingleFile, setSingleFile } from "@/lib";
 // components
 import ModalWithProgress from "../common/ModalWithProgress";
-import { useSetRecoilState } from "recoil";
 
 interface UploadFileProps {
   goBack?: () => void;
@@ -28,15 +28,7 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
   const [startApi, setStartApi] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const [apiState, setApiState] = useState<{
-    data: any[] | null;
-    message: string;
-    status: number;
-  }>({
-    data: null,
-    message: "",
-    status: 200,
-  });
+  const [socketMessage, setSocketMessage] = useState("");
 
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +48,7 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
 
     return () => {
       newSocket.disconnect();
+      setSocket(null);
     };
   }, []);
 
@@ -73,35 +66,22 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
       });
 
       socket.on("message", (message) => {
-        setApiState((prev) => ({ ...prev, message }));
+        setSocketMessage(message);
       });
-      socket.on("data", (data) => {
-        console.log(data);
-        setApiState((prev) => ({ ...prev, data }));
+      socket.on("data", (data: TResult[]) => {
+        setResultState({ keyImage: fileState.url, result: data });
+        socket.disconnect();
+        router.push("/result");
       });
       socket.on("finish", () => {
         finishApi();
-        setApiState((prev) => ({ ...prev, message: "" }));
+        setSocketMessage("");
       });
     } catch (e) {
       console.log(e);
-      setStartApi(false);
-      setOpenModal(false);
+      finishApi();
     }
-  }, [place, fileState, startApi, socket]);
-
-  useEffect(() => {
-    if (fileState && apiState.data && !startApi) {
-      setResultState({
-        keyImage: fileState.file,
-        result: apiState.data.map((data) => ({
-          placeName: data.fileName,
-          src: data.src,
-        })),
-      });
-      router.push("/result");
-    }
-  }, [startApi, apiState, router, setResultState, fileState]);
+  }, [place, fileState, startApi, socket, setResultState, router]);
 
   return (
     <>
@@ -178,7 +158,7 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
       <ModalWithProgress
         open={openModal}
         onClose={finishApi}
-        text={apiState.message}
+        text={socketMessage}
       />
     </>
   );

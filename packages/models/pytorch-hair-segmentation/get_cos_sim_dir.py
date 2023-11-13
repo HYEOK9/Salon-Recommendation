@@ -78,7 +78,6 @@ def crop_hair_from_image(image):
     mask_n = mask_n[top:bottom, left:right, :]
     # origin code
     test_image = image_n * 0.5 + mask_n * 0.5
-    cv2.imwrite("../../test.png", test_image)
     overlap_mask = mask_n[:, :, 0] == 255
 
     image_n_cropped = image_n.copy()
@@ -164,7 +163,7 @@ if __name__ == "__main__":
 
             for i, img_obj in enumerate(img_src_array):
                 file_name, img_src = img_obj["fileName"], img_obj["src"]
-                print("[{:3d}/{:3d}] {}의 이미지 비교중... ".format(i + 1, length, place_name))
+                print("[{:3d}/{:3d}] {} 이미지 비교중... ".format(i + 1, length, place_name))
                 img = src_to_file(img_src)
                 image_n_cropped = crop_hair_from_image(img)
                 vec = img2vec.get_vec(image_n_cropped)

@@ -4,7 +4,7 @@ chromedriver
 .DS_Store
 *.js
 data/
-result/
+model-test-result/
 *.pth
 .env.front
 userImage/*

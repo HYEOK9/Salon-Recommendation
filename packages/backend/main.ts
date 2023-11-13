@@ -88,7 +88,7 @@ export const run = async (place: string, uploadDir: string, socket: Socket) => {
 
       // 리뷰 없으면 뒤로가서 다음 미용실 탐색
       if (!reviewContainer.length) {
-        sendMessage(`[  0/  0] ${placeName} - 리뷰이미지 없음...`);
+        sendMessage(`${placeName} - 리뷰이미지 없음`);
         await driver.navigate().back();
         continue;
       }
