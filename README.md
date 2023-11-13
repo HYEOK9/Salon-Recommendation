@@ -1,6 +1,10 @@
 # [Salon-Recommendation](https://master.dc7vfbnxck5h4.amplifyapp.com)
 
-근처 미용실의 리뷰이미지로부터 원하는 헤어와 가장 유사한 리뷰를 가진 미용실을 추천해주는 어플리케이션
+![gif2 (3)](https://github.com/HYEOK9/Salon-Recommendation/assets/87190744/040e72ec-d339-4b9b-83cc-46c9585787b6)
+![gif1 (1)](https://github.com/HYEOK9/Salon-Recommendation/assets/87190744/215122e2-01b9-43fe-9620-5eff65fc3d6e)
+
+
+원하는 헤어와 가장 유사한 리뷰를 가진 미용실을 추천해주는 어플리케이션
 
 based on
 
@@ -19,11 +23,11 @@ based on
 ## test in local
 
 1. [chromeDriver](http://chromedriver.storage.googleapis.com/index.html) 설치
-
 2. root경로에 [model](https://drive.google.com/file/d/1w7oMuxckqEClImjLFTH7xBCpm1wg7Eg4/view) 다운 후 추가
-
-3. packages/backend/index.ts의 TEST_FILE 변수에 원하는 헤어이미지의 경로를 추가 ex) ```const TEST_FILE = "./hair.jpeg"```
-
+3. [카카오 키](https://developers.kakao.com/console/app) 발급 후 ```packages/frontend/.env``` 작성 (.env.example 참고)
 4. ```> $ pip install -r requirements.txt```
+5. ```> $ pnpm i```
+6. ```> $ pnpm front dev```
+4. ```> $ pnpm back dev```
 
-5. ```> $ pnpm i && pnpm back dev```
+❗️GPU가 없을 시 매우 느립니다.
