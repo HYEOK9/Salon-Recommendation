@@ -6,5 +6,6 @@ chromedriver
 data/
 model-test-result/
 *.pth
-.env.front
+/env/.dev
+/env/.prod
 userImage/*

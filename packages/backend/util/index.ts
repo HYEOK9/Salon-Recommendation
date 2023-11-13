@@ -1,6 +1,4 @@
-import axios from "axios";
 import fs from "fs";
-import type { Response } from "express";
 import { TImage } from "../type";
 
 export const isJSONString = (str: string) => {

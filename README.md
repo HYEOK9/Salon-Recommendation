@@ -28,7 +28,7 @@ based on
 
 1. [chromeDriver](http://chromedriver.storage.googleapis.com/index.html) 설치
 2. root경로에 [model](https://drive.google.com/file/d/1w7oMuxckqEClImjLFTH7xBCpm1wg7Eg4/view) 다운 후 추가
-3. [카카오 키](https://developers.kakao.com/console/app) 발급 후 ```packages/frontend/.env``` 작성 (.env.example 참고)
+3. [카카오 키](https://developers.kakao.com/console/app) 발급 후 ```env/.dev``` 작성 (env/dev.example 참고)
 4. ```> $ pip install -r requirements.txt```
 5. ```> $ pnpm i```
 6. ```> $ pnpm front dev```

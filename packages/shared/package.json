@@ -1,7 +1,11 @@
 {
-  "name": "@Salon-Recommendation/shared",
+  "name": "@packages/shared",
   "main": "src/index.ts",
   "scripts": {
     "build": "tsc"
+  },
+  "dependencies": {
+    "axios": "^1.5.1",
+    "env-cmd": "^10.1.0"
   }
 }

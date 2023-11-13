@@ -1,5 +1,5 @@
 {
-  "name": "@Salon-Recommendation/frontend",
+  "name": "@packages/frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,8 +13,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.16",
     "@mui/material": "^5.14.15",
-    "@types/lodash": "^4.14.201",
-    "@types/react-slick": "^0.23.12",
+    "@packages/shared": "workspace:^",
     "axios": "^1.5.1",
     "lodash": "^4.17.21",
     "next": "13.5.2",
@@ -33,6 +32,8 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/lodash": "^4.14.201",
+    "@types/react-slick": "^0.23.12",
     "eslint": "^8",
     "eslint-config-next": "13.5.3",
     "typescript": "^5"

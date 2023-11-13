@@ -6,9 +6,9 @@
     "packages/*"
   ],
   "scripts": {
-    "shared": "pnpm -F @Salon-Recommendation/shared",
-    "front": "pnpm -F @Salon-Recommendation/frontend",
-    "back": "pnpm -F @Salon-Recommendation/backend",
+    "shared": "pnpm -F @packages/shared",
+    "front": "pnpm -F @packages/frontend",
+    "back": "pnpm -F @packages/backend",
     "preinstall": "pnpm dlx only-allow pnpm"
   },
   "keywords": [],
