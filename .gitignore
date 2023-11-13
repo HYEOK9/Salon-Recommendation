@@ -7,3 +7,4 @@ data/
 result/
 *.pth
 .env.front
+userImage/*

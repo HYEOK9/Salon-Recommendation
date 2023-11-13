@@ -56,7 +56,7 @@ def crop_hair_from_image(image):
     # prepare mask
     pred = torch.sigmoid(logit.cpu())[0][0].data.numpy()
     mh, mw = data.size(2), data.size(3)
-    mask = pred >= 0.6
+    mask = pred >= 0.5
 
     mask_n = np.zeros((mh, mw, 3))
     mask_n[:, :, 0] = 255
@@ -76,10 +76,9 @@ def crop_hair_from_image(image):
     right = mw - (delta_w - left)
 
     mask_n = mask_n[top:bottom, left:right, :]
-
     # origin code
-    # image_n = image_n * 0.5 + mask_n * 0.5
-
+    test_image = image_n * 0.5 + mask_n * 0.5
+    cv2.imwrite("../../test.png", test_image)
     overlap_mask = mask_n[:, :, 0] == 255
 
     image_n_cropped = image_n.copy()
@@ -109,7 +108,7 @@ if __name__ == "__main__":
             "--key_img_dir",
             help="path to key image",
             type=str,
-            default="./data/0.jpeg",
+            default="../../data/test.jpeg",
         )
         parser.add_argument(
             "--img_src_array", help="array with image url", type=str, default="[]"
@@ -121,7 +120,7 @@ if __name__ == "__main__":
             default="pspnet_resnet101",
         )
         parser.add_argument(
-            "--save_dir", default="./result", help="path to save overlay images"
+            "--save_dir", default="../../result", help="path to save overlay images"
         )
         parser.add_argument(
             "--use_gpu",
@@ -137,9 +136,10 @@ if __name__ == "__main__":
         img_src_array = json.loads(args.img_src_array)
         network = args.networks.lower()
         save_dir = args.save_dir
-        device = (
-            "mps" if torch.backends.mps.is_available() else ("cuda" if False else "cpu")
-        )
+        device = "cpu"
+        # device = (
+        #     "mps" if torch.backends.mps.is_available() else ("cuda" if False else "cpu")
+        # )
 
         img2vec = Img2Vec(cuda=True if args.use_gpu else False, model=img2VecModel)
 
@@ -158,7 +158,7 @@ if __name__ == "__main__":
             place_name = img_src_array[0]["fileName"].split("-")[0]
 
             max_heap = []
-            key_img = Image.open(key_img_dir).convert("RGB")
+            key_img = Image.open(key_img_dir)
             cropped_key_img = crop_hair_from_image(key_img)
             cropped_key_img_vec = img2vec.get_vec(cropped_key_img)
 

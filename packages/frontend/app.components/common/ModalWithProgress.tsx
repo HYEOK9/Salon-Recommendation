@@ -7,22 +7,16 @@ import { Button } from "@mui/material";
 
 interface ModalWithProgressProps {
   open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   text?: string;
   onClose?: () => void;
 }
 
-const ModalWithProgress = ({
-  open,
-  setOpen,
-  text,
-  onClose,
-}: ModalWithProgressProps) => {
+const ModalWithProgress = ({ open, text, onClose }: ModalWithProgressProps) => {
   return (
     <Box>
       <Modal open={open} onClose={onClose}>
         <Box sx={styles.container}>
-          <CircularProgress size={25} />
+          <CircularProgress size={30} />
           <Typography>{text}</Typography>
           {onClose && <Button onClick={onClose}>취소</Button>}
         </Box>
@@ -46,7 +40,7 @@ const styles = {
     bgcolor: "var(--color-grayBackground)",
     border: "1px solid var(--color-borderColor)",
     boxShadow: 24,
-    p: 3,
-    "& p": { color: "var(--color-dark-40)", fontSize: "0.875rem" },
+    padding: "30px 0 5px 0",
+    "& p": { mt: "15px", color: "var(--color-dark-40)", fontSize: "0.875rem" },
   },
 } satisfies SxStyle;

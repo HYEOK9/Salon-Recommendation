@@ -15,12 +15,16 @@ import {
   SCROLL_TIMEOUT,
   SHOW_CLIENT,
 } from "./constant";
-import { GetBestCosSimArgs, pythonShellDefaultOptions } from "./pythonConfig";
+import {
+  GetBestCosSimWithDirArgs,
+  pythonShellDefaultOptions,
+} from "./pythonConfig";
 
-const TEST_FILE = "../../data/9.jpeg";
 PythonShell.defaultOptions = pythonShellDefaultOptions;
 
-export const run = async (place: string, file: any, socket: Socket) => {
+export const run = async (place: string, uploadDir: string, socket: Socket) => {
+  console.time("running time");
+
   const sendMessage = (msg: string) => {
     console.log(msg);
     socket.emit("message", msg);
@@ -152,8 +156,8 @@ export const run = async (place: string, file: any, socket: Socket) => {
 
       // hair segmentation script
       let pythonShell = new PythonShell(
-        "get_cos_sim.py",
-        GetBestCosSimArgs(IS_GPU, TEST_FILE, imageList)
+        "get_cos_sim_dir.py",
+        GetBestCosSimWithDirArgs(IS_GPU, `${uploadDir}/keyImage.png`, imageList)
       );
 
       const pythonShellPromise = new Promise((resolve) => {
@@ -179,13 +183,12 @@ export const run = async (place: string, file: any, socket: Socket) => {
       .sort((a, b) => b.similarity - a.similarity)
       .slice(0, SHOW_CLIENT);
 
-    result.forEach((image) => downloadImgFromUrl(image, "../../result"));
-    return result;
+    result.forEach((image) => downloadImgFromUrl(image, uploadDir));
+    socket.emit("data", result);
   } catch (e) {
     console.log(e);
   } finally {
     if (!TEST_MODE) driver.quit();
-    socket.emit("data", totalImageList);
     let totalLength = 0;
     console.log("--------------------------------");
     totalImageList.forEach(({ placeName, images }) => {
@@ -199,5 +202,3 @@ export const run = async (place: string, file: any, socket: Socket) => {
     console.log("--------------------------------");
   }
 };
-
-console.time("running time");

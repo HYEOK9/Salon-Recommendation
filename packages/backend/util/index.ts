@@ -13,41 +13,49 @@ export const isJSONString = (str: string) => {
 };
 
 export const downloadImgFromUrl = async (image: TImage, path: string) => {
-  const response = await axios.get(image.src, { responseType: "arraybuffer" });
+  try {
+    const response = await fetch(image.src);
+    const buffer = await response.arrayBuffer();
 
-  if (!fs.existsSync(path)) {
-    fs.mkdirSync(path, { recursive: true });
+    if (!fs.existsSync(path)) {
+      fs.mkdirSync(path, { recursive: true });
+    }
+
+    fs.writeFile(
+      `${path}/${image.fileName}.png`,
+      Buffer.from(buffer),
+      (err) => {
+        if (err) throw err;
+      }
+    );
+  } catch (e) {
+    console.log(e);
   }
-  fs.writeFile(`${path}/${image.fileName}.png`, response.data, (err) => {
-    if (err) throw err;
-  });
 };
 
-export function createConnectionSSE(res: Response) {
-  res.write(
-    "data: " +
-      JSON.stringify({
-        data: {},
-        message: "잠시만 기다려주세요",
-        status: 200,
-      }) +
-      "\n\n"
-  );
-}
+export const downloadImgFromBuffer = async (
+  buffer: ArrayBuffer,
+  fileName: string,
+  path: string
+) => {
+  try {
+    if (!fs.existsSync(path)) {
+      fs.mkdirSync(path, { recursive: true });
+    }
+    fs.writeFile(`${path}/${fileName}.png`, Buffer.from(buffer), (err) => {
+      if (err) throw err;
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
 
-export function writeMessageSSE(res: Response, msg: string, data?: any) {
-  console.log(msg);
-  res.write(
-    "data: " +
-      JSON.stringify({ data: data || {}, message: msg, status: 200 }) +
-      "\n\n"
-  );
-}
+export const getNow = () => {
+  const TIME_ZONE = 9 * 60 * 60 * 1000; // 9시간
+  const d = new Date();
 
-export function endConnectionSSE(res: Response, data: any) {
-  res.write(
-    "data: " +
-      JSON.stringify({ data: data || {}, message: "완료", status: 200 }) +
-      "\n\n"
-  );
-}
+  const date = new Date(d.getTime() + TIME_ZONE).toISOString().split("T")[0];
+  const time = d.toTimeString().split(" ")[0];
+
+  return date + " " + time;
+};

@@ -57,12 +57,16 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
 
       socket.emit("place", place || "curLocation");
       socket.emit("file", fileState.file);
-      socket.emit("start");
+
+      socket.on("fileReady", () => {
+        socket.emit("start");
+      });
 
       socket.on("message", (message) => {
         setApiState((prev) => ({ ...prev, message }));
       });
       socket.on("data", (data) => {
+        console.log(data);
         setApiState((prev) => ({ ...prev, data }));
       });
       socket.on("finish", () => {
@@ -150,7 +154,6 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
       </Button>
       <ModalWithProgress
         open={openModal}
-        setOpen={setOpenModal}
         onClose={finishApi}
         text={apiState.message}
       />
