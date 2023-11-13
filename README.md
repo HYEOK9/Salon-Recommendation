@@ -1,7 +1,7 @@
 # [Salon-Recommendation](https://master.dc7vfbnxck5h4.amplifyapp.com)
 
-![gif2 (3)](https://github.com/HYEOK9/Salon-Recommendation/assets/87190744/040e72ec-d339-4b9b-83cc-46c9585787b6)
-![gif1 (1)](https://github.com/HYEOK9/Salon-Recommendation/assets/87190744/215122e2-01b9-43fe-9620-5eff65fc3d6e)
+![test1 (1)](https://github.com/HYEOK9/Salon-Recommendation/assets/87190744/efa69731-b2d8-4222-821f-af185676c2d2)
+![test2 (1)](https://github.com/HYEOK9/Salon-Recommendation/assets/87190744/89668342-571b-4bc9-a3c5-e7fbc661b811)
 
 
 원하는 헤어와 가장 유사한 리뷰를 가진 미용실을 추천해주는 어플리케이션
