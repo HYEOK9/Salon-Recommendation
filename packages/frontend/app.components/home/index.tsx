@@ -1,12 +1,15 @@
 "use client";
-import { useState, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Slider from "react-slick";
+import { useSetRecoilState } from "recoil";
 // styles
 import { Box } from "@mui/material";
 import Background from "public/wave-haikei.svg";
 import { SxStyle } from "@/style/type";
 // constants
 import { sliderSettings } from "@/app.constant/config";
+// store
+import { resultAtom } from "@/app.store/resultAtom";
 // components
 import SlideWrapper from "@/app.components/common/SliderWrapper";
 import UploadFile from "./UploadFile";
@@ -19,6 +22,11 @@ const HomePage = () => {
   const goBack = useCallback(() => sliderRef?.current?.slickPrev(), []);
 
   const [place, setPlace] = useState("");
+  const setResultState = useSetRecoilState(resultAtom);
+
+  useEffect(() => {
+    setResultState(null);
+  }, [setResultState]);
 
   return (
     <Box sx={styles.container}>

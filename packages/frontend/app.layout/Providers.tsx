@@ -1,4 +1,5 @@
 "use client";
+import { RecoilRoot } from "recoil";
 import { SnackbarProvider } from "notistack";
 import { Container, SxProps } from "@mui/material";
 import { snackbarOptions } from "@/app.constant/config";
@@ -9,11 +10,13 @@ interface ProvidersProps {
 
 const Providers = ({ children }: ProvidersProps) => {
   return (
-    <SnackbarProvider {...snackbarOptions}>
-      <Container disableGutters maxWidth="xs" sx={style}>
-        {children}
-      </Container>
-    </SnackbarProvider>
+    <RecoilRoot>
+      <SnackbarProvider {...snackbarOptions}>
+        <Container disableGutters maxWidth="xs" sx={style}>
+          {children}
+        </Container>
+      </SnackbarProvider>
+    </RecoilRoot>
   );
 };
 

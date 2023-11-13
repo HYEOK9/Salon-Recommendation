@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import io, { Socket } from "socket.io-client";
 import { enqueueSnackbar } from "notistack";
 // styles
@@ -7,10 +8,13 @@ import { Box, Button, Typography } from "@mui/material";
 import { SxStyle } from "@/style/type";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CameraIcon from "public/ic-camera.png";
+// store
+import { resultAtom } from "@/app.store/resultAtom";
 // lib
 import { type TFile, deleteSingleFile, setSingleFile } from "@/lib";
 // components
 import ModalWithProgress from "../common/ModalWithProgress";
+import { useSetRecoilState } from "recoil";
 
 interface UploadFileProps {
   goBack?: () => void;
@@ -24,13 +28,19 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
   const [startApi, setStartApi] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const [apiState, setApiState] = useState({
+  const [apiState, setApiState] = useState<{
+    data: any[] | null;
+    message: string;
+    status: number;
+  }>({
     data: null,
     message: "",
     status: 200,
   });
 
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const setResultState = useSetRecoilState(resultAtom);
 
   const finishApi = () => {
     setOpenModal(false);
@@ -79,6 +89,19 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
       setOpenModal(false);
     }
   }, [place, fileState, startApi, socket]);
+
+  useEffect(() => {
+    if (fileState && apiState.data && !startApi) {
+      setResultState({
+        keyImage: fileState.file,
+        result: apiState.data.map((data) => ({
+          placeName: data.fileName,
+          src: data.src,
+        })),
+      });
+      router.push("/result");
+    }
+  }, [startApi, apiState, router, setResultState, fileState]);
 
   return (
     <>
