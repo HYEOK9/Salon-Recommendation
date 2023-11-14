@@ -10,7 +10,7 @@ importers:
 
   packages/backend:
     dependencies:
-      '@packages/shared':
+      '@salon-recommendation/shared':
         specifier: workspace:^
         version: link:../shared
       cors:
@@ -65,9 +65,12 @@ importers:
       '@mui/material':
         specifier: ^5.14.15
         version: 5.14.18(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
-      '@packages/shared':
+      '@salon-recommendation/shared':
         specifier: workspace:^
         version: link:../shared
+      axios:
+        specifier: ^1.5.1
+        version: 1.6.1
       lodash:
         specifier: ^4.17.21
         version: 4.17.21

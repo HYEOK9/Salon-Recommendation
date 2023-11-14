@@ -1,5 +1,5 @@
 {
-  "name": "@packages/shared",
+  "name": "@salon-recommendation/shared",
   "main": "src/index.ts",
   "scripts": {
     "build": "tsc"

@@ -1,5 +1,5 @@
 {
-  "name": "@packages/backend",
+  "name": "@salon-recommendation/backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@packages/shared": "workspace:^",
+    "@salon-recommendation/shared": "workspace:^",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "fs": "0.0.1-security",

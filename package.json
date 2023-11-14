@@ -1,14 +1,14 @@
 {
-  "name": "Salon-Recommendation",
+  "name": "salon-recommendation",
   "version": "1.0.0",
   "description": "",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "shared": "pnpm -F @packages/shared",
-    "front": "pnpm -F @packages/frontend",
-    "back": "pnpm -F @packages/backend",
+    "shared": "pnpm -F @salon-recommendation/shared",
+    "front": "pnpm -F @salon-recommendation/frontend",
+    "back": "pnpm -F @salon-recommendation/backend",
     "preinstall": "pnpm dlx only-allow pnpm"
   },
   "keywords": [],

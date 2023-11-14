@@ -3,7 +3,7 @@ import Axios, {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
-} from "@packages/shared/node_modules/axios";
+} from "axios";
 
 const errorInterceptor = (error: AxiosError | Error) => {
   if (Axios.isAxiosError(error)) {
