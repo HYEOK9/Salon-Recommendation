@@ -135,11 +135,7 @@ if __name__ == "__main__":
         img_src_array = json.loads(args.img_src_array)
         network = args.networks.lower()
         save_dir = args.save_dir
-        device = "cpu"
-        # device = (
-        #     "mps" if torch.backends.mps.is_available() else ("cuda" if False else "cpu")
-        # )
-
+        device = "cuda" if args.use_gpu else "cpu"
         img2vec = Img2Vec(cuda=True if args.use_gpu else False, model=img2VecModel)
 
         assert os.path.exists(ckpt_dir)

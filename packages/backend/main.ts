@@ -52,9 +52,11 @@ export const run = async (place: string, uploadDir: string, socket: Socket) => {
       while (currentUrl === (await driver.getCurrentUrl())) {}
 
       // 현 위치
-      let locTextElement = await driver.findElement(By.css("._resultQuery p"));
+      const locTextSelector = By.css("._resultQuery p");
 
-      await driver.wait(until.elementIsVisible(locTextElement)).catch(() => {});
+      await driver.wait(until.elementLocated(locTextSelector));
+
+      let locTextElement = await driver.findElement(locTextSelector);
 
       sendMessage(`${await locTextElement.getText()}\n`);
     }
