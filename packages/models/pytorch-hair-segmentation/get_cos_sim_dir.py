@@ -76,8 +76,6 @@ def crop_hair_from_image(image):
     right = mw - (delta_w - left)
 
     mask_n = mask_n[top:bottom, left:right, :]
-    # origin code
-    test_image = image_n * 0.5 + mask_n * 0.5
     overlap_mask = mask_n[:, :, 0] == 255
 
     image_n_cropped = image_n.copy()
@@ -119,9 +117,6 @@ if __name__ == "__main__":
             default="pspnet_resnet101",
         )
         parser.add_argument(
-            "--save_dir", default="../../result", help="path to save overlay images"
-        )
-        parser.add_argument(
             "--use_gpu",
             type=str2bool,
             default=True,
@@ -134,14 +129,10 @@ if __name__ == "__main__":
         key_img_dir = args.key_img_dir
         img_src_array = json.loads(args.img_src_array)
         network = args.networks.lower()
-        save_dir = args.save_dir
         device = "cuda" if args.use_gpu else "cpu"
         img2vec = Img2Vec(cuda=True if args.use_gpu else False, model=img2VecModel)
 
         assert os.path.exists(ckpt_dir)
-        assert os.path.exists(os.path.split(save_dir)[0])
-
-        os.makedirs(save_dir, exist_ok=True)
 
         # prepare network with trained parameters
         net = get_network(network).to(device)
@@ -158,7 +149,11 @@ if __name__ == "__main__":
             cropped_key_img_vec = img2vec.get_vec(cropped_key_img)
 
             for i, img_obj in enumerate(img_src_array):
-                file_name, img_src = img_obj["fileName"], img_obj["src"]
+                file_name, img_src, salon_link = (
+                    img_obj["fileName"],
+                    img_obj["src"],
+                    img_obj["salonLink"],
+                )
                 print("[{:3d}/{:3d}] {} 이미지 비교중... ".format(i + 1, length, place_name))
                 img = src_to_file(img_src)
                 image_n_cropped = crop_hair_from_image(img)
@@ -168,12 +163,21 @@ if __name__ == "__main__":
                     "fileName": file_name,
                     "similarity": getCosSim(vec, cropped_key_img_vec),
                     "src": img_src,
+                    "salonLink": salon_link,
                 }
 
                 heapq.heappush(max_heap, (obj["similarity"], obj["fileName"], obj))
 
                 if len(max_heap) > 3:
                     heapq.heappop(max_heap)
+
+                if i >= length - 3:
+                    cv2.imwrite(
+                        "{}/cropped/{}.png".format(
+                            os.path.dirname(key_img_dir), file_name
+                        ),
+                        np.array(image_n_cropped),
+                    )
 
             result = sorted(
                 [obj for (_, _, obj) in max_heap],

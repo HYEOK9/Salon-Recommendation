@@ -23,31 +23,7 @@ export const GetBestCosSimWithDirArgs = (
     keyPicDir,
     "--img_src_array",
     JSON.stringify(imgArray),
-    "--save_dir",
-    "../models/pytorch-hair-segmentation/result",
     "--use_gpu",
     GPU ? "True" : "False",
   ],
 });
-
-// keyPicDic에 비교할 이미지의 src 필요
-// export const GetBestCosSimWithSrcArgs = (
-//   GPU: boolean = true,
-//   keyPicSrc: string,
-//   imgArray: TImage[]
-// ) => ({
-//   args: [
-//     "--networks",
-//     "pspnet_resnet101",
-//     "--ckpt_dir",
-//     "../../pspnet_resnet101_sgd_lr_0.002_epoch_100_test_iou_0.918.pth",
-//     "--key_img_src",
-//     keyPicSrc,
-//     "--img_src_array",
-//     JSON.stringify(imgArray),
-//     "--save_dir",
-//     "../models/pytorch-hair-segmentation/result",
-//     "--use_gpu",
-//     GPU ? "True" : "False",
-//   ],
-// });

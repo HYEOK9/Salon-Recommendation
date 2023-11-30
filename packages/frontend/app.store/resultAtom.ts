@@ -2,7 +2,12 @@ import { atom } from "recoil";
 import { recoilPersist } from "recoil-persist";
 const { persistAtom } = recoilPersist();
 
-export type TResult = { fileName: string; similarity: number; src: string };
+export type TResult = {
+  fileName: string;
+  similarity: number;
+  src: string;
+  salonLink: string;
+};
 
 interface IResultAtom {
   keyImage: string;

@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import io, { Socket } from "socket.io-client";
+import io, { type Socket } from "socket.io-client";
 import { enqueueSnackbar } from "notistack";
 // styles
 import { Box, Button, Typography } from "@mui/material";
-import { SxStyle } from "@/style/type";
+import type { SxStyle } from "@/style/type";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CameraIcon from "public/ic-camera.png";
 // store
@@ -37,18 +37,24 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
   const finishApi = () => {
     setOpenModal(false);
     setStartApi(false);
+    setSocketMessage("");
   };
 
   useEffect(() => {
     const newSocket = io(process.env.NEXT_PUBLIC_API_BASE_URL as string, {
       transports: ["websocket"],
-      withCredentials: true,
     });
     setSocket(newSocket);
+
+    newSocket.on("connect_error", () => {
+      newSocket.disconnect();
+      setSocket(null);
+    });
 
     return () => {
       newSocket.disconnect();
       setSocket(null);
+      finishApi();
     };
   }, []);
 
@@ -61,25 +67,24 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
       socket.emit("place", place || "curLocation");
       socket.emit("file", fileState.file);
 
-      socket.on("fileReady", () => {
-        socket.emit("start");
-      });
-
-      socket.on("message", (message) => {
-        setSocketMessage(message);
-      });
+      socket.on("fileReady", () => socket.emit("start"));
+      socket.on("message", (message) => setSocketMessage(message));
       socket.on("data", (data: TResult[]) => {
         setResultState({ keyImage: fileState.url, result: data });
-        socket.disconnect();
         router.push("/result");
+        socket.disconnect();
       });
-      socket.on("finish", () => {
+
+      socket.on("disconnect", () => {
+        socket.disconnect();
         finishApi();
-        setSocketMessage("");
       });
     } catch (e) {
       console.log(e);
+      socket.disconnect();
       finishApi();
+      console.log("asdfasdf");
+      enqueueSnackbar("서버와의 연결이 끊겼어요.", { variant: "error" });
     }
   }, [place, fileState, startApi, socket, setResultState, router]);
 
@@ -148,8 +153,10 @@ const UploadFile = ({ goBack, place }: UploadFileProps) => {
           if (!fileState?.file) {
             enqueueSnackbar("파일을 업로드 해주세요!");
             return;
+          } else if (!socket) {
+            enqueueSnackbar("backend is not deployed", { variant: "warning" });
+            return;
           }
-          enqueueSnackbar("backend is not deployed", { variant: "warning" });
           setStartApi(true);
         }}
       >

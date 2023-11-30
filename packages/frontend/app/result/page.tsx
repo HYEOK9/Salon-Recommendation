@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 // style
 import { Box, Typography } from "@mui/material";
-import { SxStyle } from "@/style/type";
+import type { SxStyle } from "@/style/type";
 // store
 import { useRecoilValue } from "recoil";
 import { resultAtom } from "@/app.store/resultAtom";
@@ -33,12 +33,18 @@ export default function ResultPage() {
       </Typography>
 
       <Box className="resultWrapper">
-        {resultState?.result.map(({ src, fileName }) => (
+        {resultState.result.map(({ src, fileName, salonLink }) => (
           <Box className="resultItem" key={src}>
             <Typography className="shopName">
               {fileName.split("-")[0]}
             </Typography>
-            <Image src={src} alt="result-image" width={100} height={150} />
+            <Image
+              src={src}
+              alt="result-image"
+              width={100}
+              height={150}
+              onClick={() => window.open(salonLink)}
+            />
           </Box>
         ))}
       </Box>
@@ -61,7 +67,12 @@ const styles = {
     overflow: "scroll",
     p: "20px",
     "& *": { fontFamily: "Jua" },
-    "& img": { width: "100px", height: "auto", maxHeight: "150px" },
+    "& img": {
+      width: "100px",
+      height: "auto",
+      maxHeight: "150px",
+      cursor: "pointer",
+    },
     "& .key-image": { marginTop: "50px" },
     "& .title": { fontSize: "1rem", p: "10px 0 20px 0" },
     "& .resultWrapper": {

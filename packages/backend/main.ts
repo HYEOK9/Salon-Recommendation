@@ -4,7 +4,6 @@ import type { Socket } from "socket.io";
 import type { TImage, TResult } from "./type";
 import { downloadImgFromUrl, isJSONString } from "./util";
 import {
-  TEST_MODE,
   IS_GPU,
   chromeOptions,
   placeResultUrl,
@@ -79,11 +78,8 @@ export const run = async (place: string, uploadDir: string, socket: Socket) => {
       // 미용실 place id
       const sid = await salon.getAttribute("data-sid");
       // 해당 미용실의 방문자 review page로 이동
-      await driver
-        .navigate()
-        .to(
-          `https://m.place.naver.com/hairshop/${sid}/photo?filterType=방문자`
-        );
+      const salonLink = `https://m.place.naver.com/hairshop/${sid}`;
+      await driver.navigate().to(`${salonLink}/photo?filterType=방문자`);
 
       // 방문자 포토리뷰 담고있는 div
       let reviewContainer = await driver.findElements(By.className("Nd2nM"));
@@ -108,9 +104,13 @@ export const run = async (place: string, uploadDir: string, socket: Socket) => {
         let reviewImages = await driver.findElements(By.className("wzrbN"));
 
         for (const reviewImage of reviewImages) {
-          // 이미 넣은 dataGridGroupKey를 제외하고 리뷰 이미지 배열에 추가\
+          // 이미 넣은 dataGridGroupKey를 제외하고 리뷰 이미지 배열에 추가
 
-          let imageElement = await reviewImage.findElement(By.css("a > img"));
+          let imageElements = await reviewImage.findElements(By.css("img"));
+
+          if (!imageElements.length) continue;
+
+          let imageElement = imageElements[0];
 
           let visitorNumber = await imageElement.getAttribute("id");
           visitorNumber = visitorNumber.slice(
@@ -127,6 +127,7 @@ export const run = async (place: string, uploadDir: string, socket: Socket) => {
           imageList.push({
             fileName: `${placeName}-${imageList.length + 1}`,
             src,
+            salonLink,
           });
         }
 
@@ -178,7 +179,7 @@ export const run = async (place: string, uploadDir: string, socket: Socket) => {
 
       await driver.navigate().back();
     }
-
+    driver.quit();
     await Promise.all(pythonShellPromises);
 
     const result = preBestReviews
@@ -190,7 +191,6 @@ export const run = async (place: string, uploadDir: string, socket: Socket) => {
   } catch (e) {
     console.log(e);
   } finally {
-    if (!TEST_MODE) driver.quit();
     let totalLength = 0;
     console.log("--------------------------------");
     totalImageList.forEach(({ placeName, images }) => {
