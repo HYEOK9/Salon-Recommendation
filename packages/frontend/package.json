@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "env-cmd -f ../../env/.dev next dev",
+    "prod": "env-cmd -f ../../env/.prod next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -15,6 +16,7 @@
     "@mui/material": "^5.14.15",
     "@salon-recommendation/shared": "workspace:^",
     "axios": "^1.5.1",
+    "env-cmd": "^10.1.0",
     "lodash": "^4.17.21",
     "next": "13.5.2",
     "next-pwa": "^5.6.0",

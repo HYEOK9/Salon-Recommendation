@@ -9,3 +9,4 @@ model-test-result/
 /env/.dev
 /env/.prod
 userImage/*
+*.pem
