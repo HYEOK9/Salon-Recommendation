@@ -1,4 +1,4 @@
-# [Salon-Recommendation](https://master.dc7vfbnxck5h4.amplifyapp.com)
+# Salon-Recommendation
 
 ![test1 (1)](https://github.com/HYEOK9/Salon-Recommendation/assets/87190744/efa69731-b2d8-4222-821f-af185676c2d2)
 ![test2 (1)](https://github.com/HYEOK9/Salon-Recommendation/assets/87190744/89668342-571b-4bc9-a3c5-e7fbc661b811)
